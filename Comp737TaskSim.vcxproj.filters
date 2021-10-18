@@ -13,10 +13,48 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Data Structures">
+      <UniqueIdentifier>{419278af-4fb0-4092-b87a-67217916f500}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sprites">
+      <UniqueIdentifier>{b18495d4-ddb5-4d50-815d-abd42585ade6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Task.cpp">
+      <Filter>Data Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="Job.cpp">
+      <Filter>Data Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="JobReleaseSprite.cpp">
+      <Filter>Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteMaker.cpp">
+      <Filter>Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="JobDeadlineSprite.cpp">
+      <Filter>Sprites</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Task.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="Job.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="JobReleaseSprite.hpp">
+      <Filter>Sprites</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteMaker.hpp">
+      <Filter>Sprites</Filter>
+    </ClInclude>
+    <ClInclude Include="JobDeadlineSprite.hpp">
+      <Filter>Sprites</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
