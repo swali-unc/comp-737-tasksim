@@ -5,12 +5,12 @@
 using namespace sf;
 using std::runtime_error;
 
-#define WIDTH 8
-#define LINE_WIDTH 2.f
-#define HEIGHT 50
-#define LINE_HEIGHT HEIGHT-2.f
-#define ARROW_WIDTH WIDTH
-#define ARROW_HEIGHT WIDTH
+constexpr auto WIDTH = 8;
+constexpr auto LINE_WIDTH = 2.f;
+constexpr auto HEIGHT = 50;
+constexpr auto LINE_HEIGHT = HEIGHT - 2.f;
+constexpr auto ARROW_WIDTH = WIDTH;
+constexpr auto ARROW_HEIGHT = WIDTH;
 #define FILL_COLOR Color::Red
 
 RenderTexture* JobDeadlineSprite::createRenderTexture() {
