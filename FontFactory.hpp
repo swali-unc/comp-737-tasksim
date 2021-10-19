@@ -1,3 +1,7 @@
+/* FontFactory
+ * 
+ * Basic factory operation, returns a sf::Font if we have already loaded that font.
+ */
 #pragma once
 
 #include <map>

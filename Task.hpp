@@ -1,3 +1,10 @@
+/* Task
+ * 
+ * A task is defined by the tuple (phase,period,cost,relative deadline).
+ * There is an extra parameter called index that is simply useful for identifying
+ * which task this is.
+ */
+
 #pragma once
 
 class Task

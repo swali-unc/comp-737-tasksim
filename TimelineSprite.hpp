@@ -1,3 +1,7 @@
+/* TimelineSprite
+ * 
+ * Creates a sprite for the timeline, which is just tick marks and numbers really.
+ */
 #pragma once
 
 #include <SFML/Graphics.hpp>

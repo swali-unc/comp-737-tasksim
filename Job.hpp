@@ -1,3 +1,10 @@
+/* Job
+ * 
+ * A job is defined by the tuple (release,absolute deadline,relative deadline,cost).
+ * We keep two additional parameters, and that is the index and originating task (if any).
+ * If this job came from a task, then we can retrieve the original task, otherwise it
+ * is an aperiodic.
+ */
 #pragma once
 
 #include "Task.hpp"

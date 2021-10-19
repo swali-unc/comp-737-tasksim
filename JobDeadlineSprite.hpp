@@ -1,6 +1,6 @@
-/* JobReleaseSprite
+/* JobDeadlineSprite
  *
- * This will create a sprite that we can use which is the upward pointing arrow that indicates a job released.
+ * This will create a sprite that we can use which is the downward pointing arrow that indicates a job released.
  */
 #pragma once
 

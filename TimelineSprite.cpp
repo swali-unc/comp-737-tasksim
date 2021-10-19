@@ -47,6 +47,7 @@ RenderTexture* TimelineSprite::createRenderTexture() {
 	number.setCharacterSize(FONT_SIZE);
 	number.setFillColor(TIMELINE_FONT_COLOR);
 
+	// make every tick
 	for (double i = start; i <= end; i += interval) {
 		vertical_line.setPosition((float)(i - start) * spacing, HORIZONTAL_LINE_THICKNESS);
 		renderTexture->draw(vertical_line);
