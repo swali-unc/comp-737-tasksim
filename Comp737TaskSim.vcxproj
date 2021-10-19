@@ -142,19 +142,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FontFactory.cpp" />
     <ClCompile Include="Job.cpp" />
     <ClCompile Include="JobDeadlineSprite.cpp" />
     <ClCompile Include="JobReleaseSprite.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SpriteMaker.cpp" />
     <ClCompile Include="Task.cpp" />
+    <ClCompile Include="TimelineSprite.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FontFactory.hpp" />
     <ClInclude Include="Job.hpp" />
     <ClInclude Include="JobDeadlineSprite.hpp" />
     <ClInclude Include="JobReleaseSprite.hpp" />
     <ClInclude Include="SpriteMaker.hpp" />
     <ClInclude Include="Task.hpp" />
+    <ClInclude Include="TimelineSprite.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

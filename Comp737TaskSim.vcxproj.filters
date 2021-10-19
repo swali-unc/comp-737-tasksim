@@ -16,7 +16,7 @@
     <Filter Include="Data Structures">
       <UniqueIdentifier>{419278af-4fb0-4092-b87a-67217916f500}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sprites">
+    <Filter Include="Graphics">
       <UniqueIdentifier>{b18495d4-ddb5-4d50-815d-abd42585ade6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -31,13 +31,19 @@
       <Filter>Data Structures</Filter>
     </ClCompile>
     <ClCompile Include="JobReleaseSprite.cpp">
-      <Filter>Sprites</Filter>
+      <Filter>Graphics</Filter>
     </ClCompile>
     <ClCompile Include="SpriteMaker.cpp">
-      <Filter>Sprites</Filter>
+      <Filter>Graphics</Filter>
     </ClCompile>
     <ClCompile Include="JobDeadlineSprite.cpp">
-      <Filter>Sprites</Filter>
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="FontFactory.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="TimelineSprite.cpp">
+      <Filter>Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -48,13 +54,19 @@
       <Filter>Data Structures</Filter>
     </ClInclude>
     <ClInclude Include="JobReleaseSprite.hpp">
-      <Filter>Sprites</Filter>
+      <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="SpriteMaker.hpp">
-      <Filter>Sprites</Filter>
+      <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="JobDeadlineSprite.hpp">
-      <Filter>Sprites</Filter>
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="FontFactory.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="TimelineSprite.hpp">
+      <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

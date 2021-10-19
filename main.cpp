@@ -6,6 +6,7 @@
 #include <SFML/Graphics.hpp>
 #include "JobReleaseSprite.hpp"
 #include "JobDeadlineSprite.hpp"
+#include "TimelineSprite.hpp"
 
 using namespace sf;
 
@@ -18,9 +19,12 @@ int main() {
 	jobRelease->setPosition(Vector2f(100.f, 100.f));
 	Sprite* jobDeadline = JobDeadlineSprite::Instance()->createSprite();
 	jobDeadline->setPosition(Vector2f(200.f, 100.f));
+	TimelineSprite* timeline = new TimelineSprite(0, 1, 40, 25, 10);
+	Sprite* timelineSprite = timeline->createSprite();
+	timelineSprite->setPosition(100.f, 300.f);
 
+	Event e;
 	while (window.isOpen()) {
-		Event e;
 		while (window.pollEvent(e)) {
 			if (e.type == Event::Closed)
 				window.close();
@@ -30,9 +34,16 @@ int main() {
 		// Draw here
 		window.draw(*jobRelease);
 		window.draw(*jobDeadline);
+		window.draw(*timelineSprite);
 
+		// End frame
 		window.display();
 	}
+
+	delete jobRelease;
+	delete jobDeadline;
+	delete timelineSprite;
+	delete timeline;
 
 	return 0;
 }
