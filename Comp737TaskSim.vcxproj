@@ -147,18 +147,22 @@
     <ClCompile Include="JobDeadlineSprite.cpp" />
     <ClCompile Include="JobReleaseSprite.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ProblemSet.cpp" />
     <ClCompile Include="SpriteMaker.cpp" />
     <ClCompile Include="Task.cpp" />
     <ClCompile Include="TimelineSprite.cpp" />
+    <ClCompile Include="tinyxml2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FontFactory.hpp" />
     <ClInclude Include="Job.hpp" />
     <ClInclude Include="JobDeadlineSprite.hpp" />
     <ClInclude Include="JobReleaseSprite.hpp" />
+    <ClInclude Include="ProblemSet.hpp" />
     <ClInclude Include="SpriteMaker.hpp" />
     <ClInclude Include="Task.hpp" />
     <ClInclude Include="TimelineSprite.hpp" />
+    <ClInclude Include="tinyxml2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

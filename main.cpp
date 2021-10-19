@@ -7,6 +7,7 @@
 #include "JobReleaseSprite.hpp"
 #include "JobDeadlineSprite.hpp"
 #include "TimelineSprite.hpp"
+#include "ProblemSet.hpp"
 
 using namespace sf;
 
@@ -22,6 +23,8 @@ int main() {
 	TimelineSprite* timeline = new TimelineSprite(0, 1, 40, 25, 10);
 	Sprite* timelineSprite = timeline->createSprite();
 	timelineSprite->setPosition(100.f, 300.f);
+
+	ProblemSet problem("Problems\\TestProblem1.xml");
 
 	Event e;
 	while (window.isOpen()) {

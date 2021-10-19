@@ -45,6 +45,12 @@
     <ClCompile Include="TimelineSprite.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="ProblemSet.cpp">
+      <Filter>Data Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="tinyxml2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Task.hpp">
@@ -67,6 +73,12 @@
     </ClInclude>
     <ClInclude Include="TimelineSprite.hpp">
       <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="ProblemSet.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="tinyxml2.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
