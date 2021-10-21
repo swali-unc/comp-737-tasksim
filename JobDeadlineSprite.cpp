@@ -1,6 +1,6 @@
 #include "JobDeadlineSprite.hpp"
 
-#include <exception>
+#include <stdexcept>
 
 using namespace sf;
 using std::runtime_error;

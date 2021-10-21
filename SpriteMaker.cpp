@@ -1,6 +1,6 @@
 #include "SpriteMaker.hpp"
 
-#include <exception>
+#include <stdexcept>
 
 using namespace sf;
 
@@ -9,6 +9,8 @@ Sprite* SpriteMaker::createSprite() {
 		initialize();
 
 	Sprite* returnSprite = new Sprite(texture);
+	if (!returnSprite)
+		throw std::runtime_error("SpriteMaker- could not allocate Sprite");
 	applySpriteTransforms(returnSprite);
 	return returnSprite;
 }

@@ -1,7 +1,7 @@
 #include "TimelineSprite.hpp"
 
 #include <string>
-#include <exception>
+#include <stdexcept>
 #include "FontFactory.hpp"
 
 using namespace sf;
@@ -65,7 +65,7 @@ RenderTexture* TimelineSprite::createRenderTexture() {
 
 void TimelineSprite::applySpriteTransforms(Sprite* sprite) {
 	// The timeline is drawn from the bottom left corner
-	sprite->setOrigin(Vector2f(0.f,sprite->getGlobalBounds().height));
+	//sprite->setOrigin(Vector2f(0.f,sprite->getGlobalBounds().height));
 }
 
 TimelineSprite::TimelineSprite(double start, double interval, double end, float spacing, float dashlen) noexcept

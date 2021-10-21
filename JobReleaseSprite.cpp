@@ -1,6 +1,6 @@
 #include "JobReleaseSprite.hpp"
 
-#include <exception>
+#include <stdexcept>
 
 using namespace sf;
 using std::runtime_error;
@@ -11,7 +11,7 @@ constexpr auto HEIGHT = 50;
 constexpr auto LINE_HEIGHT = HEIGHT - 2.f;
 constexpr auto ARROW_WIDTH = WIDTH;
 constexpr auto ARROW_HEIGHT = WIDTH;
-#define FILL_COLOR Color::Green
+#define FILL_COLOR Color(0,127,0)
 
 RenderTexture* JobReleaseSprite::createRenderTexture() {
 	RenderTexture* render = new RenderTexture();
