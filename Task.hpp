@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <SFML/Graphics.hpp>
+
 class Task
 {
 public:
@@ -19,10 +21,13 @@ public:
 	inline double getCost() const { return cost; }
 	inline double getRelativeDeadline() const { return rdeadline; }
 	inline int getIndex() const { return index; }
+	inline sf::Color getColor() const { return color; }
+	inline void setColor(sf::Color color) { this->color = color; }
 private:
 	double phase;
 	double period;
 	double cost;
 	double rdeadline;
 	int index;
+	sf::Color color;
 };

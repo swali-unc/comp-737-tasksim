@@ -14,4 +14,5 @@ Task::Task(double phase, double period, double cost, double relativeDeadline, in
 	this->cost = cost;
 	this->rdeadline = relativeDeadline;
 	this->index = index;
+	this->color = sf::Color::White;
 }

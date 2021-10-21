@@ -9,6 +9,9 @@
 
 #include "Task.hpp"
 
+#include <SFML/Graphics.hpp>
+#include <string>
+
 class Job
 {
 public:
@@ -17,6 +20,7 @@ public:
 	Job(double releaseTime, double absDeadline, double relativeDeadline, double cost, int index = 0) noexcept;
 
 	void executeJob(double executionTime);
+	std::string createLabel();
 
 	inline double getReleaseTime() const { return release; }
 	inline double getAbsoluteDeadline() const { return adeadline; }
@@ -26,6 +30,8 @@ public:
 	inline int getIndex() const { return index; }
 	inline double getRemainingCost() const { return remainingCost; }
 	inline bool hasFinished() const { return remainingCost <= 0; }
+	inline sf::Color getColor() const { return color; }
+	inline void setColor(sf::Color color) { this->color = color; }
 private:
 	double release;
 	double adeadline;
@@ -34,5 +40,6 @@ private:
 	Task* task;
 	int index;
 	double remainingCost;
+	sf::Color color;
 };
 
