@@ -19,6 +19,9 @@
     <Filter Include="Graphics">
       <UniqueIdentifier>{b18495d4-ddb5-4d50-815d-abd42585ade6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TaskSim">
+      <UniqueIdentifier>{caccc002-c9df-41e5-8094-6f5e7f2365b1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -48,8 +51,20 @@
     <ClCompile Include="ProblemSet.cpp">
       <Filter>Data Structures</Filter>
     </ClCompile>
+    <ClCompile Include="ScheduleSprite.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="JobExecution.cpp">
+      <Filter>Data Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="JobExecutionSprite.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
     <ClCompile Include="tinyxml2.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>TaskSim</Filter>
+    </ClCompile>
+    <ClCompile Include="MouseoverRegistration.cpp">
+      <Filter>TaskSim</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -77,8 +92,20 @@
     <ClInclude Include="ProblemSet.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
+    <ClInclude Include="ScheduleSprite.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="JobExecution.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="JobExecutionSprite.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
     <ClInclude Include="tinyxml2.h">
-      <Filter>Header Files</Filter>
+      <Filter>TaskSim</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseoverRegistration.hpp">
+      <Filter>TaskSim</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

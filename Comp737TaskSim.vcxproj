@@ -145,9 +145,13 @@
     <ClCompile Include="FontFactory.cpp" />
     <ClCompile Include="Job.cpp" />
     <ClCompile Include="JobDeadlineSprite.cpp" />
+    <ClCompile Include="JobExecution.cpp" />
+    <ClCompile Include="JobExecutionSprite.cpp" />
     <ClCompile Include="JobReleaseSprite.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MouseoverRegistration.cpp" />
     <ClCompile Include="ProblemSet.cpp" />
+    <ClCompile Include="ScheduleSprite.cpp" />
     <ClCompile Include="SpriteMaker.cpp" />
     <ClCompile Include="Task.cpp" />
     <ClCompile Include="TimelineSprite.cpp" />
@@ -157,8 +161,12 @@
     <ClInclude Include="FontFactory.hpp" />
     <ClInclude Include="Job.hpp" />
     <ClInclude Include="JobDeadlineSprite.hpp" />
+    <ClInclude Include="JobExecution.hpp" />
+    <ClInclude Include="JobExecutionSprite.hpp" />
     <ClInclude Include="JobReleaseSprite.hpp" />
+    <ClInclude Include="MouseoverRegistration.hpp" />
     <ClInclude Include="ProblemSet.hpp" />
+    <ClInclude Include="ScheduleSprite.hpp" />
     <ClInclude Include="SpriteMaker.hpp" />
     <ClInclude Include="Task.hpp" />
     <ClInclude Include="TimelineSprite.hpp" />
