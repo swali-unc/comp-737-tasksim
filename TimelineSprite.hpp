@@ -11,6 +11,11 @@ class TimelineSprite : public SpriteMaker {
 public:
 	TimelineSprite(double start, double interval, double end, float spacing, float dashlen) noexcept;
 
+	inline double getStart() const { return start; }
+	inline double getInterval() const { return interval; }
+	inline double getEnd() const { return end; }
+	inline float getSpacing() const { return spacing; }
+	inline float getDashLen() const { return dashlen; }
 private:
 	double start;
 	double interval;
