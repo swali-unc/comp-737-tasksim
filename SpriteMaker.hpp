@@ -17,10 +17,10 @@ public:
 
 	SpriteMaker() noexcept;
 	~SpriteMaker();
-private:
+protected:
 	sf::RenderTexture* renderTexture;
 	sf::Texture texture;
-
+private:
 	virtual sf::RenderTexture* createRenderTexture() = 0;
 	virtual void applySpriteTransforms(sf::Sprite* sprite) = 0;
 	void createTexture();
