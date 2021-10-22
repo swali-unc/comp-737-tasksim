@@ -6,15 +6,16 @@
 #include "JobExecutionSprite.hpp"
 #include "JobDeadlineSprite.hpp"
 #include "JobReleaseSprite.hpp"
+#include "JobCompletionSprite.hpp"
 #include "FontFactory.hpp"
 #include "MouseoverRegistration.hpp"
+#include "Utility.hpp"
 
 using namespace sf;
 using std::make_pair;
 using std::vector;
 using std::string;
 using std::pair;
-using std::to_string;
 
 auto constexpr JOB_HEIGHT = 40.f;
 auto constexpr CONTEXT_SWITCH_HEIGHT = 20.f;
@@ -40,10 +41,12 @@ RenderTexture* ScheduleSprite::createRenderTexture() {
 	// Do we have deadlines and/or releases?
 	Sprite* deadlineSprite = JobDeadlineSprite::Instance()->createSprite();
 	Sprite* releaseSprite = JobReleaseSprite::Instance()->createSprite();
+	Sprite* completionSprite = JobCompletionSprite::Instance()->createSprite();
 	double arrowHeight = 0;
-	if (numDeadlines) arrowHeight = deadlineSprite->getGlobalBounds().height;
-	if (numReleases && arrowHeight < releaseSprite->getGlobalBounds().height)
-		arrowHeight = releaseSprite->getGlobalBounds().height;
+	auto updateMaxHeight = [&arrowHeight](unsigned int count, double height) { if (count && arrowHeight < height) arrowHeight = height; };
+	updateMaxHeight(numDeadlines, deadlineSprite->getGlobalBounds().height);
+	updateMaxHeight(numReleases, releaseSprite->getGlobalBounds().height);
+	updateMaxHeight(numCompletions, completionSprite->getGlobalBounds().height);
 	height += arrowHeight;
 
 	// protected variable
@@ -76,7 +79,8 @@ RenderTexture* ScheduleSprite::createRenderTexture() {
 		jSprite->setPosition((float)((runningJobs[i].getStart() - start) * widthPerCost) + LEFT_SHIFT, (float)(height - timelineHeight));
 		render->draw(*jSprite);
 		moReg.push_back(make_pair(jSprite->getGlobalBounds(),
-			"J" + runningJobs[i].getJob()->createLabel() + " executes for " + to_string(runningJobs[i].getDuration())
+			"J" + runningJobs[i].getJob()->createLabel() + " executes for " + to_string_trim(runningJobs[i].getDuration())
+			+ " [" + to_string_trim(runningJobs[i].getStart()) + "," + to_string_trim(runningJobs[i].getStart() + runningJobs[i].getDuration()) + ")"
 		));
 		delete jSprite;
 	}
@@ -110,17 +114,18 @@ RenderTexture* ScheduleSprite::createRenderTexture() {
 			Vector2f outputOrigin = sprite->getOrigin();
 			outputRect.top = outputPos.y - outputOrigin.y;
 			outputRect.left = outputPos.x - outputOrigin.x;
-			moReg.push_back(make_pair(outputRect, prependText + label + " (" + to_string(startTime) + ")"));
+			moReg.push_back(make_pair(outputRect, prependText + label + " (" + to_string_trim(startTime) + ")"));
 		}
 	};
 
-	renderArrows(releaseSprite, numReleases, releaseLabels, "Release: ");
-	renderArrows(deadlineSprite, numDeadlines, deadlineLabels, "Deadline: ");
+	if (numReleases)
+		renderArrows(releaseSprite, numReleases, releaseLabels, "Release: ");
+	if (numDeadlines)
+		renderArrows(deadlineSprite, numDeadlines, deadlineLabels, "Deadline: ");
+	if (numCompletions)
+		renderArrows(completionSprite, numCompletions, completionLabels, "Complete: ");
 
-	// This is done at end now, because we already created renderTexture first
 	render->display();
-
-	// We do not want to re-register mouseover
 	return render;
 }
 
@@ -144,7 +149,8 @@ void ScheduleSprite::applySpriteTransforms(Sprite*) {
 ScheduleSprite::ScheduleSprite(double start, double end, double interval,
 	JobExecution* runningJobs, unsigned int numJobs,
 	std::pair<double, std::string>* releaseLabels, unsigned int numReleases,
-	std::pair<double, std::string>* deadlineLabels, unsigned int numDeadlines)
+	std::pair<double, std::string>* deadlineLabels, unsigned int numDeadlines,
+	std::pair<double, std::string>* completionLabels, unsigned int numCompletions)
 	: SpriteMaker() {
 	this->start = start;
 	this->end = end;
@@ -155,6 +161,8 @@ ScheduleSprite::ScheduleSprite(double start, double end, double interval,
 	this->numReleases = numReleases;
 	this->deadlineLabels = deadlineLabels;
 	this->numDeadlines = numDeadlines;
+	this->completionLabels = completionLabels;
+	this->numCompletions = numCompletions;
 	initialize();
 }
 

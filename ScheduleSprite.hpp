@@ -12,8 +12,9 @@ class ScheduleSprite : public SpriteMaker
 public:
 	ScheduleSprite(double start, double end, double interval,
 		JobExecution* runningJobs, unsigned int numJobs,
-		std::pair<double,std::string>* releaseLabels, unsigned int numReleases,
-		std::pair<double,std::string>* deadlineLabels, unsigned int numDeadlines);
+		std::pair<double,std::string>* releaseLabels = nullptr, unsigned int numReleases = 0,
+		std::pair<double,std::string>* deadlineLabels = nullptr, unsigned int numDeadlines = 0,
+		std::pair<double,std::string>* completionLabels = nullptr, unsigned int numCompletions = 0);
 	~ScheduleSprite();
 
 	inline double getStart() const { return start; }
@@ -36,6 +37,9 @@ private:
 	unsigned int numReleases;
 	std::pair<double, std::string>* deadlineLabels;
 	unsigned int numDeadlines;
+	std::pair<double, std::string>* completionLabels;
+	unsigned int numCompletions;
+
 	std::vector<std::pair<sf::FloatRect, std::string>> moReg;
 };
 
