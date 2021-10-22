@@ -10,6 +10,7 @@
 
 #include "JobReleaseSprite.hpp"
 #include "JobDeadlineSprite.hpp"
+#include "JobCompletionSprite.hpp"
 #include "TimelineSprite.hpp"
 #include "ProblemSet.hpp"
 #include "ScheduleSprite.hpp"
@@ -29,8 +30,11 @@ auto constexpr MOUSE_ADJUST = (MOUSE_WIDTH-1.f) / 2.f;
 auto constexpr MOUSEOVER_FONT = "times.ttf";
 auto constexpr MOUSEOVER_FONT_SIZE = 12;
 auto constexpr MOUSEOVER_INBORDER_SIZE = 10.f;
+auto constexpr MOUSEOVER_OUTLINE_THICKNESS = -2.f;
 #define MOUSEOVER_FONT_COLOR Color::Black
 #define MOUSEOVER_FILL_COLOR Color::White
+#define MOUSEOVER_OUTLINE_COLOR Color(127,0,0)
+#define MOUSEOVER_OFFSET Vector2f(5.f,5.f)
 
 pair<Sprite*,RenderTexture*> UpdateMouseoverText(Vector2f mouse, float radius);
 
@@ -46,11 +50,12 @@ int main() {
 	TimelineSprite* timeline = new TimelineSprite(0, 1, 40, 25, 10);
 	Sprite* timelineSprite = timeline->createSprite();
 	timelineSprite->setPosition(100.f, 300.f);
+	Sprite* jobComplete = JobCompletionSprite::Instance()->createSprite();
+	jobComplete->setPosition(300.f, 100.f);
 
 	ProblemSet problem("Problems\\TestProblem1.xml");
 
 	int numJobs = 3;
-	//JobExecution* runningJobs = new JobExecution[numJobs];
 	Job jobs[] = { Job(0,10,10,1,0), Job(0,11,11,2,1), Job(0,15,15,3,2) };
 	JobExecution runningJobs[] = {
 		JobExecution(jobs[0],0,1),
@@ -65,7 +70,10 @@ int main() {
 		make_pair(jobs[1].getAbsoluteDeadline(),"J1"),
 		make_pair(jobs[2].getAbsoluteDeadline(),"J2")
 	};
-	ScheduleSprite* schedule = new ScheduleSprite(0, 40, 1, runningJobs, numJobs, releases, 3, deadlines, 3);
+	pair<double, string> completions[] = {
+		make_pair(1,"J0"), make_pair(3,"J1"), make_pair(5,"J2")
+	};
+	ScheduleSprite* schedule = new ScheduleSprite(0, 40, 1, runningJobs, numJobs, releases, 3, deadlines, 3, completions, 3);
 	Sprite* scheduleSprite = schedule->createSprite();
 	scheduleSprite->setPosition(100.f, 400.f);
 	schedule->doMouseoverRegistrations(100.f, 400.f);
@@ -80,7 +88,7 @@ int main() {
 	RenderTexture* mouseoverRender = nullptr;
 
 	while (window.isOpen()) {
-		while (window.pollEvent(e)) {\
+		while (window.pollEvent(e)) {
 			switch (e.type) {
 			case Event::Closed:
 				window.close();
@@ -94,7 +102,7 @@ int main() {
 				try {
 					tie(mouseoverSprite,mouseoverRender) = UpdateMouseoverText(mouse, MOUSE_ADJUST);
 					if (mouseoverSprite)
-						mouseoverSprite->setPosition(mouse);
+						mouseoverSprite->setPosition(mouse + MOUSEOVER_OFFSET);
 				}
 				catch (exception e) {
 					mouseoverSprite = nullptr;
@@ -112,8 +120,11 @@ int main() {
 		// Draw here
 		window.draw(*jobRelease);
 		window.draw(*jobDeadline);
+		window.draw(*jobComplete);
 		window.draw(*timelineSprite);
 		window.draw(*scheduleSprite);
+
+		// This tiny light circle around the mouse
 		window.draw(mouseRect);
 
 		// Final draw
@@ -127,6 +138,12 @@ int main() {
 	delete jobRelease;
 	delete jobDeadline;
 	delete timelineSprite;
+	delete scheduleSprite;
+
+	if (mouseoverSprite) delete mouseoverSprite;
+	if (mouseoverRender) delete mouseoverRender;
+
+	delete schedule;
 	delete timeline;
 
 	return 0;
@@ -157,6 +174,8 @@ pair<Sprite*,RenderTexture*> UpdateMouseoverText(Vector2f mouse, float radius) {
 	FloatRect textRect = text.getGlobalBounds();
 	RectangleShape background(Vector2f(textRect.width + 2 * MOUSEOVER_INBORDER_SIZE, textRect.height + 2 * MOUSEOVER_INBORDER_SIZE));
 	background.setFillColor(MOUSEOVER_FILL_COLOR);
+	background.setOutlineThickness(MOUSEOVER_OUTLINE_THICKNESS);
+	background.setOutlineColor(MOUSEOVER_OUTLINE_COLOR);
 
 	// This is what everything is drawn on
 	RenderTexture* render = new RenderTexture();

@@ -66,6 +66,12 @@
     <ClCompile Include="MouseoverRegistration.cpp">
       <Filter>TaskSim</Filter>
     </ClCompile>
+    <ClCompile Include="JobCompletionSprite.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Task.hpp">
@@ -106,6 +112,12 @@
     </ClInclude>
     <ClInclude Include="MouseoverRegistration.hpp">
       <Filter>TaskSim</Filter>
+    </ClInclude>
+    <ClInclude Include="JobCompletionSprite.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
