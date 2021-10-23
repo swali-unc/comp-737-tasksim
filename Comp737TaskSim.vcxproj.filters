@@ -78,6 +78,9 @@
     <ClCompile Include="ColorFactory.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="SimulationState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Task.hpp">
@@ -133,6 +136,9 @@
     </ClInclude>
     <ClInclude Include="ColorFactory.hpp">
       <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="SimulationState.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

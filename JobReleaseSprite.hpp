@@ -11,6 +11,8 @@ class JobReleaseSprite : public SpriteMaker
 {
 public:
 	static JobReleaseSprite* Instance();
+
+	~JobReleaseSprite();
 private:
 	static JobReleaseSprite* _instance;
 
@@ -18,6 +20,5 @@ private:
 	virtual void applySpriteTransforms(sf::Sprite* sprite);
 
 	JobReleaseSprite();
-	~JobReleaseSprite();
 };
 

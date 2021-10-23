@@ -11,6 +11,7 @@ class JobDeadlineSprite : public SpriteMaker
 {
 public:
 	static JobDeadlineSprite* Instance();
+	~JobDeadlineSprite();
 private:
 	static JobDeadlineSprite* _instance;
 
@@ -18,6 +19,5 @@ private:
 	virtual void applySpriteTransforms(sf::Sprite* sprite);
 
 	JobDeadlineSprite();
-	~JobDeadlineSprite();
 };
 

@@ -155,6 +155,7 @@
     <ClCompile Include="ProblemSet.cpp" />
     <ClCompile Include="ResourceAccessSprite.cpp" />
     <ClCompile Include="ScheduleSprite.cpp" />
+    <ClCompile Include="SimulationState.cpp" />
     <ClCompile Include="SpriteMaker.cpp" />
     <ClCompile Include="Task.cpp" />
     <ClCompile Include="TimelineSprite.cpp" />
@@ -175,6 +176,7 @@
     <ClInclude Include="ResourceAccessParameter.h" />
     <ClInclude Include="ResourceAccessSprite.hpp" />
     <ClInclude Include="ScheduleSprite.hpp" />
+    <ClInclude Include="SimulationState.hpp" />
     <ClInclude Include="SpriteMaker.hpp" />
     <ClInclude Include="Task.hpp" />
     <ClInclude Include="TimelineSprite.hpp" />

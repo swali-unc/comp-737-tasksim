@@ -7,6 +7,7 @@ class JobCompletionSprite : public SpriteMaker
 {
 public:
 	static JobCompletionSprite* Instance();
+	~JobCompletionSprite();
 private:
 	static JobCompletionSprite* _instance;
 
@@ -14,5 +15,4 @@ private:
 	virtual void applySpriteTransforms(sf::Sprite* sprite);
 
 	JobCompletionSprite();
-	~JobCompletionSprite();
 };

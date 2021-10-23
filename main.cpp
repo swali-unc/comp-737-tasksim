@@ -17,6 +17,7 @@
 #include "ScheduleSprite.hpp"
 #include "MouseoverRegistration.hpp"
 #include "FontFactory.hpp"
+#include "SimulationState.hpp"
 
 using namespace sf;
 using std::string;
@@ -54,14 +55,16 @@ int main() {
 	Sprite* jobComplete = JobCompletionSprite::Instance()->createSprite();
 	jobComplete->setPosition(300.f, 100.f);
 
-	ProblemSet problem;
+	ProblemSet* problem;
 	try {
-		problem.loadProblem("Problems\\test.xml");
+		problem = new ProblemSet("Problems\\test.xml");
 	}
 	catch (exception e) {
 		fprintf(stderr, "Could not load problem: %s", e.what());
+		return 1;
 	}
-	Task** tasks = problem.getTaskSet();
+	SimulationState::Instance()->setProblem(problem);
+	Task** tasks = problem->getTaskSet();
 
 	// Jobs release- just gonna assume all tasks phase is 0 for testing
 	Job jobs[] = { Job(*tasks[0],0), Job(*tasks[1],0), Job(*tasks[2],0) };
@@ -84,7 +87,7 @@ int main() {
 	pair<double, string> completions[] = {
 		make_pair(1,jobs[0].createLabel()), make_pair(3,jobs[1].createLabel()), make_pair(5,jobs[2].createLabel())
 	};
-	ScheduleSprite* schedule = new ScheduleSprite(0, problem.getScheduleLength(), problem.getTimelineInterval(), runningJobs, 3, releases, 3, deadlines, 3, completions, 3);
+	ScheduleSprite* schedule = new ScheduleSprite(0, problem->getScheduleLength(), problem->getTimelineInterval(), runningJobs, 3, releases, 3, deadlines, 3, completions, 3);
 	Sprite* scheduleSprite = schedule->createSprite();
 	scheduleSprite->setPosition(100.f, 400.f);
 	schedule->doMouseoverRegistrations(100.f, 400.f);
@@ -148,6 +151,7 @@ int main() {
 
 	delete jobRelease;
 	delete jobDeadline;
+	delete jobComplete;
 	delete timelineSprite;
 	delete scheduleSprite;
 
@@ -156,6 +160,13 @@ int main() {
 
 	delete schedule;
 	delete timeline;
+
+	// Delete global instances
+	delete JobReleaseSprite::Instance();
+	delete JobDeadlineSprite::Instance();
+	delete JobCompletionSprite::Instance();
+	delete MouseoverRegistration::Instance();
+	delete SimulationState::Instance();
 
 	return 0;
 }
