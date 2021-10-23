@@ -7,6 +7,7 @@
 #include <SFML/Window/Event.hpp>
 #include <math.h>
 #include <stdexcept>
+#include <utility>
 
 #include "JobReleaseSprite.hpp"
 #include "JobDeadlineSprite.hpp"
@@ -53,27 +54,37 @@ int main() {
 	Sprite* jobComplete = JobCompletionSprite::Instance()->createSprite();
 	jobComplete->setPosition(300.f, 100.f);
 
-	ProblemSet problem("Problems\\TestProblem1.xml");
+	ProblemSet problem;
+	try {
+		problem.loadProblem("Problems\\test.xml");
+	}
+	catch (exception e) {
+		fprintf(stderr, "Could not load problem: %s", e.what());
+	}
+	Task** tasks = problem.getTaskSet();
 
-	int numJobs = 3;
-	Job jobs[] = { Job(0,10,10,1,0), Job(0,11,11,2,1), Job(0,15,15,3,2) };
-	JobExecution runningJobs[] = {
-		JobExecution(jobs[0],0,1),
-		JobExecution(jobs[1],1,2),
-		JobExecution(jobs[2],3,2)
-	};
+	// Jobs release- just gonna assume all tasks phase is 0 for testing
+	Job jobs[] = { Job(*tasks[0],0), Job(*tasks[1],0), Job(*tasks[2],0) };
+	// Scheduler makes this decision- for testing, schedule all jobs sequentially
+	JobExecution runningJobs[] = { jobs[0].executeJob(1), jobs[1].executeJob(2,1), jobs[2].executeJob(2,3) };
+
+	// Release data
 	pair<double, string> releases[] = {
-		make_pair(0,"J0"), make_pair(0,"J1"), make_pair(0,"J2")
+		make_pair(jobs[0].getReleaseTime(),jobs[0].createLabel()),
+		make_pair(jobs[1].getReleaseTime(),jobs[1].createLabel()),
+		make_pair(jobs[2].getReleaseTime(),jobs[2].createLabel())
 	};
+	// Deadline data
 	pair<double, string> deadlines[] = {
-		make_pair(jobs[0].getAbsoluteDeadline(),"J0"),
-		make_pair(jobs[1].getAbsoluteDeadline(),"J1"),
-		make_pair(jobs[2].getAbsoluteDeadline(),"J2")
+		make_pair(jobs[0].getAbsoluteDeadline(),jobs[0].createLabel()),
+		make_pair(jobs[1].getAbsoluteDeadline(),jobs[1].createLabel()),
+		make_pair(jobs[2].getAbsoluteDeadline(),jobs[2].createLabel())
 	};
+	// Job completion data
 	pair<double, string> completions[] = {
-		make_pair(1,"J0"), make_pair(3,"J1"), make_pair(5,"J2")
+		make_pair(1,jobs[0].createLabel()), make_pair(3,jobs[1].createLabel()), make_pair(5,jobs[2].createLabel())
 	};
-	ScheduleSprite* schedule = new ScheduleSprite(0, 40, 1, runningJobs, numJobs, releases, 3, deadlines, 3, completions, 3);
+	ScheduleSprite* schedule = new ScheduleSprite(0, problem.getScheduleLength(), problem.getTimelineInterval(), runningJobs, 3, releases, 3, deadlines, 3, completions, 3);
 	Sprite* scheduleSprite = schedule->createSprite();
 	scheduleSprite->setPosition(100.f, 400.f);
 	schedule->doMouseoverRegistrations(100.f, 400.f);
