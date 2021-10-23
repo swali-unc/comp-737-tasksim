@@ -30,6 +30,7 @@ public:
 	inline void accessResource(std::string resourceName) { heldResources[resourceName] = true; }
 	void releaseResource(std::string resourceName);
 	bool getTimeOfNextResource(double& resourceStartDelta, std::vector<std::string>& resourceNames) const;
+	bool getTimeOfNextResourceRelease(double& resourceReleaseDelta, std::vector<std::string>& resourceNames) const;
 	std::string createLabel() const;
 
 	inline double getReleaseTime() const { return release; }

@@ -52,7 +52,7 @@ bool Job::getTimeOfNextResource(double& resourceStartDelta, std::vector<std::str
 	double startTime = -1;
 
 	for (auto& i : resourceAccess) {
-		if (currentTime <= i.start) {
+		if (currentTime < i.start) {
 			// Find something earlier than our earliest?
 			if (i.start < startTime || startTime == -1) {
 				// Clear our list because this resource is earlier
@@ -67,7 +67,29 @@ bool Job::getTimeOfNextResource(double& resourceStartDelta, std::vector<std::str
 
 	if (startTime == -1)
 		return false;
-	resourceStartDelta = startTime;
+	resourceStartDelta = startTime - currentTime;
+	return true;
+}
+
+bool Job::getTimeOfNextResourceRelease(double& resourceReleaseDelta, vector<string>& resourceNames) const {
+	double releaseTime = -1;
+
+	for (auto& i : resourceAccess) {
+		// Are we currently in this resource segment?
+		if (currentTime >= i.start && currentTime < i.start + i.duration) {
+			if (i.start + i.duration < releaseTime || releaseTime == -1) {
+				resourceNames.clear();
+				resourceNames.push_back(i.resourceName);
+				releaseTime = i.start + i.duration;
+			}
+			else if (i.start + i.duration == releaseTime)
+				resourceNames.push_back(i.resourceName);
+		}
+	}
+
+	if (releaseTime == -1)
+		return false;
+	resourceReleaseDelta = releaseTime - currentTime;
 	return true;
 }
 
