@@ -7,6 +7,7 @@
 #include "JobDeadlineSprite.hpp"
 #include "JobReleaseSprite.hpp"
 #include "JobCompletionSprite.hpp"
+#include "ResourceAccessSprite.hpp"
 #include "FontFactory.hpp"
 #include "MouseoverRegistration.hpp"
 #include "Utility.hpp"
@@ -49,7 +50,7 @@ RenderTexture* ScheduleSprite::createRenderTexture() {
 	updateMaxHeight(numCompletions, completionSprite->getGlobalBounds().height);
 	height += arrowHeight;
 
-	// protected variable
+	// Create our render texture
 	RenderTexture* render = new RenderTexture();
 	if (!render) {
 		delete timelineSprite;
@@ -79,9 +80,37 @@ RenderTexture* ScheduleSprite::createRenderTexture() {
 		jSprite->setPosition((float)((runningJobs[i].getStart() - start) * widthPerCost) + LEFT_SHIFT, (float)(height - timelineHeight));
 		render->draw(*jSprite);
 		moReg.push_back(make_pair(jSprite->getGlobalBounds(),
-			"J" + runningJobs[i].getJob()->createLabel() + " executes for " + to_string_trim(runningJobs[i].getDuration())
+			runningJobs[i].getJob()->createLabel() + " executes for " + to_string_trim(runningJobs[i].getDuration())
 			+ " [" + to_string_trim(runningJobs[i].getStart()) + "," + to_string_trim(runningJobs[i].getStart() + runningJobs[i].getDuration()) + ")"
 		));
+
+		// Are there any resource accesses in this slice?
+		auto resources = runningJobs[i].getResourceParameters();
+		for (auto& r : resources) {
+			double offsetIntoSlice = r.start;
+			double duration = r.duration;
+			FloatRect spriteRect = jSprite->getGlobalBounds();
+			spriteRect.left += (float)(offsetIntoSlice * widthPerCost);
+			spriteRect.width = (float)(duration * widthPerCost);
+
+			ResourceAccessSprite ras(spriteRect.width, spriteRect.height / 3, runningJobs[i].getJob()->getColor());
+			Sprite* rSprite = ras.createSprite();
+			rSprite->setPosition(spriteRect.left, spriteRect.top + spriteRect.height);
+			render->draw(*rSprite);
+
+			moReg.push_back(
+				make_pair(spriteRect,
+					stringprintf("Resource: %s-%s [%s,%s)",
+						r.resourceName.c_str(), runningJobs[i].getJob()->createLabel().c_str(),
+						to_string_trim(runningJobs[i].getStart() + offsetIntoSlice).c_str(),
+						to_string_trim(runningJobs[i].getStart() + offsetIntoSlice + duration).c_str()
+					)
+			));
+
+			delete rSprite;
+		}
+
+		// Cleanup
 		delete jSprite;
 	}
 

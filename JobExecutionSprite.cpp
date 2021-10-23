@@ -40,7 +40,7 @@ RenderTexture* JobExecutionSprite::createRenderTexture() {
 	text.setFont(*font);
 	text.setCharacterSize(LABEL_FONT_SIZE);
 	text.setFillColor(LABEL_FONT_COLOR);
-	text.setString("J" + label);
+	text.setString(label);
 
 	// Check if we can fit it
 	FloatRect textRect = text.getGlobalBounds();

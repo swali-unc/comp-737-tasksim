@@ -1,12 +1,17 @@
 #include "ProblemSet.hpp"
 
 #include <stdexcept>
+#include "ColorFactory.hpp"
 
 using std::string;
 using std::runtime_error;
 using namespace tinyxml2;
 
 ProblemSet::ProblemSet(string filename) {
+	loadProblem(filename);
+}
+
+void ProblemSet::loadProblem(string filename) {
 	XMLDocument doc;
 	if (doc.LoadFile(filename.c_str()) != XMLError::XML_SUCCESS)
 		throw runtime_error("ProblemSet- Could not parse xml file");
@@ -26,6 +31,7 @@ ProblemSet::ProblemSet(string filename) {
 	if (!jobs)
 		throw runtime_error("ProblemSet- missing Jobs block");
 
+	initializeProblem(problem);
 	initializeTaskSet(tasks);
 	initializeAperiodics(jobs);
 }
@@ -44,7 +50,23 @@ ProblemSet::~ProblemSet() {
 	}
 }
 
+void ProblemSet::initializeProblem(XMLElement* problem) {
+	auto procCount = problem->FirstChildElement("NumProcessors");
+	processorCount = procCount ? procCount->UnsignedText() : 1;
+
+	auto schdLen = problem->FirstChildElement("ScheduleLength");
+	if (!schdLen)
+		throw runtime_error("Missing schedule length");
+	scheduleLength = schdLen->DoubleText();
+
+	auto timelineInt = problem->FirstChildElement("TimelineInterval");
+	timelineInterval = timelineInt ? timelineInt->DoubleText() : 1;
+}
+
 void ProblemSet::initializeTaskSet(XMLElement* tasks) {
+	// We want colors for our tasks
+	ColorFactory colors;
+	
 	// Count the tasks
 	int task_count = 0;
 	for (auto child = tasks->FirstChildElement("Task"); child; child = child->NextSiblingElement("Task"))
@@ -83,6 +105,28 @@ void ProblemSet::initializeTaskSet(XMLElement* tasks) {
 
 		// Create the task
 		taskSet[task_index] = new Task(taskPhase, taskPeriod, taskCost, taskRelativeDeadline, task_index);
+
+		// Do we have any resources?
+		auto resources = child->FirstChildElement("Resources");
+		if (resources) {
+			for (auto resource = resources->FirstChildElement("Resource"); resource; resource = resource->NextSiblingElement("Resource")) {
+				// Resource name
+				auto name = resource->FirstChildElement("Name");
+				if (!name) throw runtime_error("ProblemSet- resource missing name");
+				// Default start offset is 0
+				auto resourceStart = resource->FirstChildElement("Start");
+				double startOffset = !resourceStart ? 0 : resourceStart->DoubleText();
+				// Cost
+				auto resourceCost = resource->FirstChildElement("Cost");
+				if (!resourceCost) throw runtime_error("ProblemSet- resource missing cost");
+
+				taskSet[task_index]->addResourceAccess(startOffset, resourceCost->DoubleText(), name->GetText());
+			}
+		}
+
+		// Set the color
+		taskSet[task_index]->setColor(colors.getNextColor());
+
 		++task_index;
 	}
 }

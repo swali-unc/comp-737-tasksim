@@ -72,6 +72,12 @@
     <ClCompile Include="Utility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ResourceAccessSprite.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorFactory.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Task.hpp">
@@ -118,6 +124,15 @@
     </ClInclude>
     <ClInclude Include="Utility.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceAccessParameter.h">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceAccessSprite.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorFactory.hpp">
+      <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

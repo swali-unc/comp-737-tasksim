@@ -8,6 +8,8 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include "ResourceAccessParameter.h"
+#include <vector>
 
 class Task
 {
@@ -23,6 +25,8 @@ public:
 	inline int getIndex() const { return index; }
 	inline sf::Color getColor() const { return color; }
 	inline void setColor(sf::Color color) { this->color = color; }
+	inline void addResourceAccess(double time, double duration, std::string name) { resourceAccess.push_back({ name,time,duration }); }
+	inline std::vector<ResourceAccessParameter>& getResourceParameters() { return resourceAccess; }
 private:
 	double phase;
 	double period;
@@ -30,4 +34,6 @@ private:
 	double rdeadline;
 	int index;
 	sf::Color color;
+
+	std::vector<ResourceAccessParameter> resourceAccess;
 };

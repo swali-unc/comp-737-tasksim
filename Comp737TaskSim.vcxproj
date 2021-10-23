@@ -142,6 +142,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ColorFactory.cpp" />
     <ClCompile Include="FontFactory.cpp" />
     <ClCompile Include="Job.cpp" />
     <ClCompile Include="JobCompletionSprite.cpp" />
@@ -152,6 +153,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MouseoverRegistration.cpp" />
     <ClCompile Include="ProblemSet.cpp" />
+    <ClCompile Include="ResourceAccessSprite.cpp" />
     <ClCompile Include="ScheduleSprite.cpp" />
     <ClCompile Include="SpriteMaker.cpp" />
     <ClCompile Include="Task.cpp" />
@@ -160,6 +162,7 @@
     <ClCompile Include="Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ColorFactory.hpp" />
     <ClInclude Include="FontFactory.hpp" />
     <ClInclude Include="Job.hpp" />
     <ClInclude Include="JobCompletionSprite.hpp" />
@@ -169,6 +172,8 @@
     <ClInclude Include="JobReleaseSprite.hpp" />
     <ClInclude Include="MouseoverRegistration.hpp" />
     <ClInclude Include="ProblemSet.hpp" />
+    <ClInclude Include="ResourceAccessParameter.h" />
+    <ClInclude Include="ResourceAccessSprite.hpp" />
     <ClInclude Include="ScheduleSprite.hpp" />
     <ClInclude Include="SpriteMaker.hpp" />
     <ClInclude Include="Task.hpp" />
