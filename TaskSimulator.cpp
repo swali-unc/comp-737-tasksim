@@ -38,6 +38,7 @@ bool TaskSimulator::Simulate() {
 		// Job finish event
 		if (nextEventIsCompletion) {
 			schedule.push_back(new JobFinishEvent(time, *job));
+			currentJobs.erase(std::find(currentJobs.begin(), currentJobs.end(), job));
 			currentJob = nullptr;
 			sched->onJobFinish(time, job);
 			return true;
@@ -58,6 +59,7 @@ bool TaskSimulator::Simulate() {
 	if (eventType == ScheduleEventType::ReleaseEvent) {
 		JobReleaseEvent* releaseEvent = static_cast<JobReleaseEvent*>(nextEvent);
 		schedule.push_back(releaseEvent);
+		currentJobs.push_back(releaseEvent->getJob());
 		sched->onJobRelease(time, releaseEvent->getJob());
 		return true;
 	}

@@ -152,6 +152,7 @@
     <ClCompile Include="JobReleaseSprite.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MouseoverRegistration.cpp" />
+    <ClCompile Include="NonPreemptiveEDF.cpp" />
     <ClCompile Include="ProblemSet.cpp" />
     <ClCompile Include="ResourceAccessSprite.cpp" />
     <ClCompile Include="Scheduler.cpp" />
@@ -176,10 +177,12 @@
     <ClInclude Include="JobReleaseSprite.hpp" />
     <ClInclude Include="JobStatusEvent.hpp" />
     <ClInclude Include="MouseoverRegistration.hpp" />
+    <ClInclude Include="NonPreemptiveEDF.hpp" />
     <ClInclude Include="ProblemSet.hpp" />
     <ClInclude Include="ResourceAccessParameter.h" />
     <ClInclude Include="ResourceAccessSprite.hpp" />
     <ClInclude Include="Scheduler.hpp" />
+    <ClInclude Include="SchedulerExports.h" />
     <ClInclude Include="ScheduleSprite.hpp" />
     <ClInclude Include="SimulationState.hpp" />
     <ClInclude Include="SpriteMaker.hpp" />

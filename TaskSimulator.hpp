@@ -21,8 +21,10 @@ public:
 	bool Schedule(Job* job, double duration);
 	//bool ScheduleJob(Job* job, double start, double duration);
 	bool StopExecutingCurrentJob();
+	bool IsIdle() const { return currentJob == nullptr; }
 
 	bool Simulate();
+	std::vector<Job*> getCurrentJobs() const { return currentJobs; } //C++11 will move, not copy
 private:
 	void logScheduleError(std::string errorText);
 

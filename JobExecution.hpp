@@ -17,7 +17,7 @@ public:
 
 	inline double getStart() const { return start; }
 	inline double getDuration() const { return duration; }
-	inline double setDuration(double duration) { this->duration = duration; }
+	inline void setDuration(double duration) { this->duration = duration; }
 	inline Job* getJob() const { return job; }
 	inline void addResourceAccess(double time, double duration, std::string name) { resourceAccess.push_back({ name,time,duration }); }
 	inline std::vector<ResourceAccessParameter>& getResourceParameters() { return resourceAccess; }

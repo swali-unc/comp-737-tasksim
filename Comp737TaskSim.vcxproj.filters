@@ -25,6 +25,9 @@
     <Filter Include="Schedulers">
       <UniqueIdentifier>{4a7c9856-5996-4faf-91ef-7f276e344f50}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{ba11de55-bb9c-4816-8044-82233534eabe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -89,6 +92,9 @@
     </ClCompile>
     <ClCompile Include="Scheduler.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NonPreemptiveEDF.cpp">
+      <Filter>Schedulers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -162,6 +168,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Scheduler.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NonPreemptiveEDF.hpp">
+      <Filter>Schedulers</Filter>
+    </ClInclude>
+    <ClInclude Include="SchedulerExports.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

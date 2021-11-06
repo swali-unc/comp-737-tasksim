@@ -40,7 +40,126 @@ auto constexpr MOUSEOVER_OUTLINE_THICKNESS = -2.f;
 
 pair<Sprite*,RenderTexture*> UpdateMouseoverText(Vector2f mouse, float radius);
 
-int main() {
+int main(int argc, char* argv[]) {
+	RenderWindow window(VideoMode(1280, 720), "COMP 737 Task Scheduling Simulator");
+	const Color clearColor = { 255, 255, 204 };
+	window.setFramerateLimit(100);
+
+	// Mouseover data
+	Vector2f mouse(0, 0);
+	CircleShape mouseRect(MOUSE_ADJUST);
+	mouseRect.setOrigin(Vector2f(MOUSE_ADJUST, MOUSE_ADJUST));
+	mouseRect.setFillColor(Color(255, 255, 255, 128));
+	Sprite* mouseoverSprite = nullptr;
+	RenderTexture* mouseoverRender = nullptr;
+
+	Event e;
+	while(window.isOpen()) {
+		while(window.pollEvent(e)) {
+			switch(e.type) {
+			case Event::Closed:
+				window.close();
+				break;
+			case Event::MouseMoved:
+				mouse = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+				mouseRect.setPosition(mouse.x, mouse.y);
+				if(mouseoverSprite) delete mouseoverSprite;
+				if(mouseoverRender) delete mouseoverRender;
+
+				try {
+					tie(mouseoverSprite, mouseoverRender) = UpdateMouseoverText(mouse, MOUSE_ADJUST);
+					if(mouseoverSprite)
+						mouseoverSprite->setPosition(mouse + MOUSEOVER_OFFSET);
+				}
+				catch(exception e) {
+					mouseoverSprite = nullptr;
+					mouseoverRender = nullptr;
+					fprintf(stderr, "Exception: %s\n", e.what());
+				}
+				catch(...) {
+					fprintf(stderr, "Unhandled exception\n");
+				}
+				break;
+			}
+		}
+
+		window.clear(clearColor);
+		// Draw here
+
+		// This tiny light circle around the mouse
+		window.draw(mouseRect);
+
+		// Final draw
+		if(mouseoverSprite)
+			window.draw(*mouseoverSprite);
+
+		// End frame
+		window.display();
+	}
+
+	// Delete sprites
+	if(mouseoverSprite) delete mouseoverSprite;
+	if(mouseoverRender) delete mouseoverRender;
+
+	// Delete global instances
+	delete JobReleaseSprite::Instance();
+	delete JobDeadlineSprite::Instance();
+	delete JobCompletionSprite::Instance();
+	delete MouseoverRegistration::Instance();
+	delete SimulationState::Instance();
+
+	return 0;
+}
+
+pair<Sprite*,RenderTexture*> UpdateMouseoverText(Vector2f mouse, float radius) {
+	string textDestination;
+	
+	// Is there any mouseover text?
+	if (!MouseoverRegistration::Instance()->detectCollision(mouse, radius, textDestination))
+		return make_pair<Sprite*,RenderTexture*>(nullptr,nullptr);
+
+	// Load our font
+	static Font* font = nullptr;
+	if (!font && !FontFactory::loadFont(MOUSEOVER_FONT, &font))
+		throw runtime_error("Could not load font in mouseover display");
+
+	// Create the output text
+	Text text;
+	text.setFont(*font);
+	text.setCharacterSize(MOUSEOVER_FONT_SIZE);
+	text.setFillColor(MOUSEOVER_FONT_COLOR);
+	text.setString(textDestination);
+	text.setOrigin(0, 0);
+	text.setPosition(MOUSEOVER_INBORDER_SIZE, MOUSEOVER_INBORDER_SIZE);
+
+	// This is the background on which the text is output
+	FloatRect textRect = text.getGlobalBounds();
+	RectangleShape background(Vector2f(textRect.width + 2 * MOUSEOVER_INBORDER_SIZE, textRect.height + 2 * MOUSEOVER_INBORDER_SIZE));
+	background.setFillColor(MOUSEOVER_FILL_COLOR);
+	background.setOutlineThickness(MOUSEOVER_OUTLINE_THICKNESS);
+	background.setOutlineColor(MOUSEOVER_OUTLINE_COLOR);
+
+	// This is what everything is drawn on
+	RenderTexture* render = new RenderTexture();
+	if (!render) throw runtime_error("Could not allocate render texture in mouseover text");
+	if (!render->create((unsigned int)background.getGlobalBounds().width, (unsigned int)background.getGlobalBounds().height)) {
+		delete render;
+		throw runtime_error("Could not create render texture resolution");
+	}
+
+	// Perform the draws
+	render->draw(background);
+	render->draw(text);
+	
+	// Display, grab the sprite, and cleanup
+	render->display();
+	Sprite* sprite = new Sprite(render->getTexture());
+	if (!sprite) throw runtime_error("Could not allocate sprite for mouseover text");
+
+	return make_pair(sprite,render);
+}
+
+/*int main() {
 	RenderWindow window(VideoMode(1280, 720), "COMP 737 Task Scheduling Simulator");
 	const Color clearColor = { 255, 255, 204 };
 	window.setFramerateLimit(100);
@@ -169,52 +288,4 @@ int main() {
 	delete SimulationState::Instance();
 
 	return 0;
-}
-
-pair<Sprite*,RenderTexture*> UpdateMouseoverText(Vector2f mouse, float radius) {
-	string textDestination;
-	
-	// Is there any mouseover text?
-	if (!MouseoverRegistration::Instance()->detectCollision(mouse, radius, textDestination))
-		return make_pair<Sprite*,RenderTexture*>(nullptr,nullptr);
-
-	// Load our font
-	static Font* font = nullptr;
-	if (!font && !FontFactory::loadFont(MOUSEOVER_FONT, &font))
-		throw runtime_error("Could not load font in mouseover display");
-
-	// Create the output text
-	Text text;
-	text.setFont(*font);
-	text.setCharacterSize(MOUSEOVER_FONT_SIZE);
-	text.setFillColor(MOUSEOVER_FONT_COLOR);
-	text.setString(textDestination);
-	text.setOrigin(0, 0);
-	text.setPosition(MOUSEOVER_INBORDER_SIZE, MOUSEOVER_INBORDER_SIZE);
-
-	// This is the background on which the text is output
-	FloatRect textRect = text.getGlobalBounds();
-	RectangleShape background(Vector2f(textRect.width + 2 * MOUSEOVER_INBORDER_SIZE, textRect.height + 2 * MOUSEOVER_INBORDER_SIZE));
-	background.setFillColor(MOUSEOVER_FILL_COLOR);
-	background.setOutlineThickness(MOUSEOVER_OUTLINE_THICKNESS);
-	background.setOutlineColor(MOUSEOVER_OUTLINE_COLOR);
-
-	// This is what everything is drawn on
-	RenderTexture* render = new RenderTexture();
-	if (!render) throw runtime_error("Could not allocate render texture in mouseover text");
-	if (!render->create((unsigned int)background.getGlobalBounds().width, (unsigned int)background.getGlobalBounds().height)) {
-		delete render;
-		throw runtime_error("Could not create render texture resolution");
-	}
-
-	// Perform the draws
-	render->draw(background);
-	render->draw(text);
-	
-	// Display, grab the sprite, and cleanup
-	render->display();
-	Sprite* sprite = new Sprite(render->getTexture());
-	if (!sprite) throw runtime_error("Could not allocate sprite for mouseover text");
-
-	return make_pair(sprite,render);
-}
+}*/
