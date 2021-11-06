@@ -163,7 +163,9 @@
     <ClCompile Include="TaskSimulator.cpp" />
     <ClCompile Include="TimelineSprite.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
+    <ClCompile Include="UIButton.cpp" />
     <ClCompile Include="Utility.cpp" />
+    <ClCompile Include="SimView.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ColorFactory.hpp" />
@@ -191,7 +193,9 @@
     <ClInclude Include="TaskSimulator.hpp" />
     <ClInclude Include="TimelineSprite.hpp" />
     <ClInclude Include="tinyxml2.h" />
+    <ClInclude Include="UIButton.hpp" />
     <ClInclude Include="Utility.hpp" />
+    <ClInclude Include="SimView.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

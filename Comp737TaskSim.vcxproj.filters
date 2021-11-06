@@ -25,8 +25,11 @@
     <Filter Include="Schedulers">
       <UniqueIdentifier>{4a7c9856-5996-4faf-91ef-7f276e344f50}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UI">
+    <Filter Include="MVC">
       <UniqueIdentifier>{ba11de55-bb9c-4816-8044-82233534eabe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{a6e7814e-b348-4452-9811-3407233f993a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -95,6 +98,12 @@
     </ClCompile>
     <ClCompile Include="NonPreemptiveEDF.cpp">
       <Filter>Schedulers</Filter>
+    </ClCompile>
+    <ClCompile Include="SimView.cpp">
+      <Filter>MVC</Filter>
+    </ClCompile>
+    <ClCompile Include="UIButton.cpp">
+      <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -175,6 +184,12 @@
     </ClInclude>
     <ClInclude Include="SchedulerExports.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SimView.hpp">
+      <Filter>MVC</Filter>
+    </ClInclude>
+    <ClInclude Include="UIButton.hpp">
+      <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -18,6 +18,7 @@
 #include "MouseoverRegistration.hpp"
 #include "FontFactory.hpp"
 #include "SimulationState.hpp"
+#include "SimView.hpp"
 
 using namespace sf;
 using std::string;
@@ -53,6 +54,9 @@ int main(int argc, char* argv[]) {
 	Sprite* mouseoverSprite = nullptr;
 	RenderTexture* mouseoverRender = nullptr;
 
+	// Our view
+	SimView view;
+
 	Event e;
 	while(window.isOpen()) {
 		while(window.pollEvent(e)) {
@@ -85,6 +89,7 @@ int main(int argc, char* argv[]) {
 
 		window.clear(clearColor);
 		// Draw here
+		view.renderButtons(window, mouse);
 
 		// This tiny light circle around the mouse
 		window.draw(mouseRect);
