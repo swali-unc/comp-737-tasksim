@@ -90,6 +90,8 @@ UIButton::UIButton(string text, function<void()> callback, unsigned int width, u
 	this->mouseoverTexture = this->mouseoverRenderTexture->getTexture();
 	this->mouseoverSprite = new Sprite(this->mouseoverTexture);
 	applySpriteTransforms(this->mouseoverSprite);
+
+	this->clickState = false;
 }
 
 UIButton::~UIButton() {

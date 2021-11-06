@@ -18,7 +18,9 @@
 #include "MouseoverRegistration.hpp"
 #include "FontFactory.hpp"
 #include "SimulationState.hpp"
-#include "SimView.hpp"
+#include "ViewObject.hpp"
+#include "TitleView.hpp"
+#include "ViewManager.hpp"
 
 using namespace sf;
 using std::string;
@@ -27,6 +29,7 @@ using std::exception;
 using std::make_pair;
 using std::pair;
 using std::tie;
+using std::vector;
 
 auto constexpr MOUSE_WIDTH = 21.f;
 auto constexpr MOUSE_ADJUST = (MOUSE_WIDTH-1.f) / 2.f;
@@ -42,7 +45,7 @@ auto constexpr MOUSEOVER_OUTLINE_THICKNESS = -2.f;
 pair<Sprite*,RenderTexture*> UpdateMouseoverText(Vector2f mouse, float radius);
 
 int main(int argc, char* argv[]) {
-	RenderWindow window(VideoMode(1280, 720), "COMP 737 Task Scheduling Simulator");
+	RenderWindow window(VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "COMP 737 Task Scheduling Simulator");
 	const Color clearColor = { 255, 255, 204 };
 	window.setFramerateLimit(100);
 
@@ -54,10 +57,12 @@ int main(int argc, char* argv[]) {
 	Sprite* mouseoverSprite = nullptr;
 	RenderTexture* mouseoverRender = nullptr;
 
-	// Our view
-	SimView view;
+	// Our current views
+	auto viewManager = ViewManager::Instance();
+	viewManager->addView(new TitleView());
 
 	Event e;
+	bool mouseClicked = false;
 	while(window.isOpen()) {
 		while(window.pollEvent(e)) {
 			switch(e.type) {
@@ -65,7 +70,7 @@ int main(int argc, char* argv[]) {
 				window.close();
 				break;
 			case Event::MouseMoved:
-				mouse = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+				mouse = window.mapPixelToCoords(Mouse::getPosition(window));
 				mouseRect.setPosition(mouse.x, mouse.y);
 				if(mouseoverSprite) delete mouseoverSprite;
 				if(mouseoverRender) delete mouseoverRender;
@@ -87,9 +92,12 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
+		// Click state on mouse
+		mouseClicked = Mouse::isButtonPressed(Mouse::Button::Left);
+
 		window.clear(clearColor);
 		// Draw here
-		view.renderButtons(window, mouse);
+		viewManager->renderAll(window, mouse, mouseClicked);
 
 		// This tiny light circle around the mouse
 		window.draw(mouseRect);
@@ -100,6 +108,8 @@ int main(int argc, char* argv[]) {
 
 		// End frame
 		window.display();
+
+		viewManager->performQueuedActions();
 	}
 
 	// Delete sprites

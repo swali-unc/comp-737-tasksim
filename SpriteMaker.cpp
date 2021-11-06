@@ -32,6 +32,7 @@ void SpriteMaker::createTexture() {
 
 SpriteMaker::SpriteMaker() noexcept {
 	renderTexture = nullptr;
+	cachedSprite = nullptr;
 }
 
 SpriteMaker::~SpriteMaker() {

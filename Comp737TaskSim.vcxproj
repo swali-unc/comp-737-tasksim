@@ -142,6 +142,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ButtonView.cpp" />
     <ClCompile Include="ColorFactory.cpp" />
     <ClCompile Include="FontFactory.cpp" />
     <ClCompile Include="Job.cpp" />
@@ -153,21 +154,27 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MouseoverRegistration.cpp" />
     <ClCompile Include="NonPreemptiveEDF.cpp" />
+    <ClCompile Include="OpenFileView.cpp" />
     <ClCompile Include="ProblemSet.cpp" />
     <ClCompile Include="ResourceAccessSprite.cpp" />
     <ClCompile Include="Scheduler.cpp" />
     <ClCompile Include="ScheduleSprite.cpp" />
     <ClCompile Include="SimulationState.cpp" />
+    <ClCompile Include="SimulationView.cpp" />
     <ClCompile Include="SpriteMaker.cpp" />
     <ClCompile Include="Task.cpp" />
     <ClCompile Include="TaskSimulator.cpp" />
+    <ClCompile Include="TextSprite.cpp" />
+    <ClCompile Include="ThreadLockedObject.cpp" />
     <ClCompile Include="TimelineSprite.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="UIButton.cpp" />
     <ClCompile Include="Utility.cpp" />
-    <ClCompile Include="SimView.cpp" />
+    <ClCompile Include="TitleView.cpp" />
+    <ClCompile Include="ViewManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ButtonView.hpp" />
     <ClInclude Include="ColorFactory.hpp" />
     <ClInclude Include="CommentEvent.hpp" />
     <ClInclude Include="FontFactory.hpp" />
@@ -180,6 +187,7 @@
     <ClInclude Include="JobStatusEvent.hpp" />
     <ClInclude Include="MouseoverRegistration.hpp" />
     <ClInclude Include="NonPreemptiveEDF.hpp" />
+    <ClInclude Include="OpenFileView.hpp" />
     <ClInclude Include="ProblemSet.hpp" />
     <ClInclude Include="ResourceAccessParameter.h" />
     <ClInclude Include="ResourceAccessSprite.hpp" />
@@ -187,17 +195,21 @@
     <ClInclude Include="SchedulerExports.h" />
     <ClInclude Include="ScheduleSprite.hpp" />
     <ClInclude Include="SimulationState.hpp" />
+    <ClInclude Include="SimulationView.hpp" />
     <ClInclude Include="SpriteMaker.hpp" />
     <ClInclude Include="Task.hpp" />
     <ClInclude Include="ScheduleEvent.hpp" />
     <ClInclude Include="TaskSimulator.hpp" />
+    <ClInclude Include="TextSprite.hpp" />
+    <ClInclude Include="ThreadLockedObject.hpp" />
     <ClInclude Include="TimelineSprite.hpp" />
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="UIButton.hpp" />
     <ClInclude Include="Utility.hpp" />
-    <ClInclude Include="SimView.hpp" />
+    <ClInclude Include="TitleView.hpp" />
+    <ClInclude Include="ViewManager.hpp" />
+    <ClInclude Include="ViewObject.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets" />
 </Project>

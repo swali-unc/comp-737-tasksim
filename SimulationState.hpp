@@ -8,6 +8,9 @@
 #include <utility>
 #include <string>
 
+auto constexpr WINDOW_WIDTH = 1280u;
+auto constexpr WINDOW_HEIGHT = 720u;
+
 class SimulationState
 {
 public:

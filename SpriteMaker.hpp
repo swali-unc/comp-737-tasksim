@@ -14,12 +14,14 @@ class SpriteMaker
 public:
 	void initialize();
 	sf::Sprite* createSprite();
+	inline sf::Sprite* getCachedSprite() { if(!cachedSprite) cachedSprite = createSprite(); return cachedSprite; }
 
 	SpriteMaker() noexcept;
-	~SpriteMaker();
+	virtual ~SpriteMaker();
 protected:
 	sf::RenderTexture* renderTexture;
 	sf::Texture texture;
+	sf::Sprite* cachedSprite;
 private:
 	virtual sf::RenderTexture* createRenderTexture() = 0;
 	virtual void applySpriteTransforms(sf::Sprite* sprite) = 0;

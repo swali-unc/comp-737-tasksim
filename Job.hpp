@@ -26,7 +26,7 @@ public:
 	Job(Task& t, double releaseTime, int index) noexcept;
 	Job(double releaseTime, double absDeadline, double relativeDeadline, double cost, int index = 0) noexcept;
 
-	JobExecution executeJob(double executionTime, double execStart = 0);
+	JobExecution* executeJob(double executionTime, double execStart = 0);
 	inline void accessResource(std::string resourceName) { heldResources[resourceName] = true; }
 	void releaseResource(std::string resourceName);
 	bool getTimeOfNextResource(double& resourceStartDelta, std::vector<std::string>& resourceNames) const;

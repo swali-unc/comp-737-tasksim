@@ -19,24 +19,29 @@ bool TaskSimulator::Simulate() {
 	auto nextEvent = upcomingEventQueue.top();
 	auto nextEventTime = nextEvent ? nextEvent->getStart() : SimulationState::Instance()->getProblem()->getTimelineInterval();
 	bool nextEventIsCompletion = false;
+	printf("Next event time: %f\n", nextEventTime);
 	if (currentJob) {
-		auto remainingCost = currentJob->getJob()->getRemainingCost();
-		if (remainingCost < nextEventTime - time) {
+		auto remainingCost = currentJob->getRemainingCost();
+		if (currentJobStart + remainingCost < nextEventTime ) {
 			// Our current job will finish executing before the next event
 			// so the real next event is a job completion
 			nextEventIsCompletion = true;
-			nextEventTime = time + remainingCost;
+			nextEventTime = currentJobStart + remainingCost;
 		}
 	}
 
 	auto elapsedTime = nextEventTime - time;
+	auto startTime = time;
 	time = nextEventTime;
 	if (currentJob) {
-		auto job = currentJob->getJob();
-		job->executeJob(elapsedTime);
+		auto job = currentJob;
+		//schedule.push_back(job->executeJob(elapsedTime,startTime));
+		//job->executeJob(elapsedTime);
 
 		// Job finish event
 		if (nextEventIsCompletion) {
+			schedule.push_back(job->executeJob(time - currentJobStart, currentJobStart));
+
 			schedule.push_back(new JobFinishEvent(time, *job));
 			currentJobs.erase(std::find(currentJobs.begin(), currentJobs.end(), job));
 			currentJob = nullptr;
@@ -86,6 +91,9 @@ bool TaskSimulator::Simulate() {
 void TaskSimulator::LoadProblem(ProblemSet* problem) {
 	Reset();
 
+	if(!problem)
+		problem = SimulationState::Instance()->getProblem();
+
 	auto taskSet = problem->getTaskSet();
 	auto taskCount = problem->getTaskCount();
 	auto jobSet = problem->getAperiodics();
@@ -119,10 +127,11 @@ void TaskSimulator::LoadProblem(ProblemSet* problem) {
 
 bool TaskSimulator::Schedule(Job* job, double duration) {
 	if (currentJob) {
-		if (currentJob->getJob() == job) {
-			// If it's the same job, then just update the duration
-			double currentDuration = currentJob->getDuration();
-			currentJob->setDuration((currentDuration - (time - currentJobStart)) + duration);
+		if (currentJob == job) {
+			// If it's the same job, then no need to do anything
+			//double currentDuration = currentJob->getDuration();
+			//currentJob->setDuration((currentDuration - (time - currentJobStart)) + duration);
+
 			return true;
 		}
 
@@ -140,9 +149,10 @@ bool TaskSimulator::Schedule(Job* job, double duration) {
 	}
 
 	// schedule our new job
-	currentJob = new JobExecution(*job, time, duration);
+	//currentJob = new JobExecution(*job, time, duration);
+	currentJob = job;
 	currentJobStart = time;
-	schedule.push_back(currentJob);
+	//schedule.push_back(currentJob);
 	return true;
 }
 
@@ -152,13 +162,19 @@ bool TaskSimulator::StopExecutingCurrentJob() {
 		return false;
 	}
 
-	currentJob->setDuration(time - currentJobStart);
+	//currentJob->setDuration(time - currentJobStart);
+	if(currentJobStart < time) {
+		schedule.push_back(currentJob->executeJob(time - currentJobStart, currentJobStart));
+	}
+
+	currentJob = nullptr;
 	return true;
 }
 
 void TaskSimulator::logScheduleError(string errorText) {
 	schedule.push_back(new CommentEvent(time, errorText));
 	SimulationState::Instance()->logError(time, errorText);
+	fprintf(stderr, "Scheduler error reported: %s\n", errorText.c_str());
 }
 
 void TaskSimulator::Reset() {

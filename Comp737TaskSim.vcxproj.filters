@@ -31,6 +31,9 @@
     <Filter Include="UI">
       <UniqueIdentifier>{a6e7814e-b348-4452-9811-3407233f993a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DH">
+      <UniqueIdentifier>{99e58c89-c7eb-428a-b49a-c3c7f3d069e1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -99,11 +102,29 @@
     <ClCompile Include="NonPreemptiveEDF.cpp">
       <Filter>Schedulers</Filter>
     </ClCompile>
-    <ClCompile Include="SimView.cpp">
+    <ClCompile Include="TitleView.cpp">
       <Filter>MVC</Filter>
     </ClCompile>
     <ClCompile Include="UIButton.cpp">
       <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ButtonView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TextSprite.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ViewManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenFileView.cpp">
+      <Filter>MVC</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadLockedObject.cpp">
+      <Filter>DH</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulationView.cpp">
+      <Filter>MVC</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -185,11 +206,32 @@
     <ClInclude Include="SchedulerExports.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SimView.hpp">
+    <ClInclude Include="TitleView.hpp">
       <Filter>MVC</Filter>
     </ClInclude>
     <ClInclude Include="UIButton.hpp">
       <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewObject.hpp">
+      <Filter>MVC</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonView.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TextSprite.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenFileView.hpp">
+      <Filter>MVC</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadLockedObject.hpp">
+      <Filter>DH</Filter>
+    </ClInclude>
+    <ClInclude Include="SimulationView.hpp">
+      <Filter>MVC</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

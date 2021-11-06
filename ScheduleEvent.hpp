@@ -21,6 +21,7 @@ public:
 
 	inline double getStart() const { return start; }
 	inline double getDuration() const { return duration; }
+	inline void setDuration(double newDuration) { duration = newDuration; }
 private:
 	double start;
 	double duration;

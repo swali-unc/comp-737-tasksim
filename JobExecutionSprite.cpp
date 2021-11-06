@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include "FontFactory.hpp"
+#include "Utility.hpp"
 
 using namespace sf;
 
@@ -22,7 +23,8 @@ RenderTexture* JobExecutionSprite::createRenderTexture() {
 
 	if (!renderTexture->create((unsigned int)width, (unsigned int)height)) {
 		delete renderTexture;
-		throw std::runtime_error("JobExecutionSprite- could not create render texture resolution");
+		throw std::runtime_error(stringprintf("JobExecutionSprite- could not create render texture resolution %u x %u",
+			(unsigned int)width, (unsigned int)height));
 	}
 
 	RectangleShape rect(Vector2f((float)width, (float)height));

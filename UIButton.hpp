@@ -16,9 +16,14 @@ public:
 	void doCallback() { callback(); }
 
 	sf::Sprite* getSprite(unsigned int mouseX, unsigned int mouseY) const;
+	sf::Sprite* getRegularSprite() const { return regularSprite; }
+	sf::Sprite* getMouseoverSprite() const { return mouseoverSprite; }
 
 	void setButtonPosition(float x, float y);
 	bool isMouseover(unsigned int x, unsigned int y) const;
+
+	inline bool getClickState() const { return clickState; }
+	inline void setClickState(bool clicked) { clickState = clicked; }
 private:
 	virtual sf::RenderTexture* createRenderTexture();
 	virtual void applySpriteTransforms(sf::Sprite* sprite);
@@ -30,5 +35,6 @@ private:
 	sf::Texture mouseoverTexture;
 	sf::Sprite *mouseoverSprite, *regularSprite;
 	sf::Color borderColor;
+	bool clickState;
 };
 

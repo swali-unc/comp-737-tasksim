@@ -6,7 +6,7 @@ using namespace sf;
 using std::runtime_error;
 
 auto constexpr WIDTH = 8;
-auto constexpr HEIGHT = 50;
+auto constexpr HEIGHT = 70;
 auto constexpr LINE_WIDTH = 3;
 auto constexpr LINE_TOP_THICKNESS = 4;
 #define LINE_COLOR Color::Black

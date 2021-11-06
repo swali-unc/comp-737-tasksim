@@ -15,7 +15,7 @@ public:
 	TaskSimulator() noexcept;
 	~TaskSimulator();
 
-	void LoadProblem(ProblemSet* problem);
+	void LoadProblem(ProblemSet* problem = nullptr);
 	void Reset();
 	
 	bool Schedule(Job* job, double duration);
@@ -25,6 +25,9 @@ public:
 
 	bool Simulate();
 	std::vector<Job*> getCurrentJobs() const { return currentJobs; } //C++11 will move, not copy
+	std::vector<ScheduleEvent*> getSchedule() const { return schedule; }
+
+	double getTime() const { return time; }
 private:
 	void logScheduleError(std::string errorText);
 
@@ -34,7 +37,7 @@ private:
 	std::vector<ScheduleEvent*> schedule;
 	std::vector<Job*> currentJobs;
 	double time;
-	JobExecution* currentJob;
+	Job* currentJob;
 	double currentJobStart;
 };
 

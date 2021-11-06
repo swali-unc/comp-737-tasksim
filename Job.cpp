@@ -3,8 +3,8 @@
 using std::string;
 using std::vector;
 
-JobExecution Job::executeJob(double executionTime, double execStart) {
-	JobExecution jExec(*this, execStart, executionTime);
+JobExecution* Job::executeJob(double executionTime, double execStart) {
+	JobExecution* jExec = new JobExecution(*this, execStart, executionTime);
 
 	for (auto& i : resourceAccess) {
 		// Did not we already pass this resource?
@@ -16,12 +16,12 @@ JobExecution Job::executeJob(double executionTime, double execStart) {
 				if (currentTime + executionTime < i.start + i.duration) {
 					// Access the resource for a partial amount of time
 					//jExec.addResourceAccess(i.start - currentTime, i.start + i.duration - (currentTime + executionTime), i.resourceName);
-					jExec.addResourceAccess(i.start - currentTime, currentTime + executionTime - i.start, i.resourceName);
+					jExec->addResourceAccess(i.start - currentTime, currentTime + executionTime - i.start, i.resourceName);
 					accessResource(i.resourceName);
 				}
 				else {
 					// Access the resource for the full duration
-					jExec.addResourceAccess(i.start - currentTime, i.duration, i.resourceName);
+					jExec->addResourceAccess(i.start - currentTime, i.duration, i.resourceName);
 				}
 			}
 		}
