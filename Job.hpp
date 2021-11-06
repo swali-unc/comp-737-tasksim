@@ -60,3 +60,9 @@ private:
 	std::map<std::string, bool> heldResources;
 };
 
+class JobReleaseComparator {
+public:
+	bool operator()(const Job* lhs, Job* rhs) const {
+		return lhs->getReleaseTime() > rhs->getReleaseTime();
+	}
+};

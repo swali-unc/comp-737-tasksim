@@ -22,6 +22,9 @@
     <Filter Include="TaskSim">
       <UniqueIdentifier>{caccc002-c9df-41e5-8094-6f5e7f2365b1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Schedulers">
+      <UniqueIdentifier>{4a7c9856-5996-4faf-91ef-7f276e344f50}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -54,9 +57,6 @@
     <ClCompile Include="ScheduleSprite.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="JobExecution.cpp">
-      <Filter>Data Structures</Filter>
-    </ClCompile>
     <ClCompile Include="JobExecutionSprite.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
@@ -79,6 +79,15 @@
       <Filter>Graphics</Filter>
     </ClCompile>
     <ClCompile Include="SimulationState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TaskSimulator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JobExecution.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Scheduler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -110,9 +119,6 @@
     <ClInclude Include="ScheduleSprite.hpp">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="JobExecution.hpp">
-      <Filter>Data Structures</Filter>
-    </ClInclude>
     <ClInclude Include="JobExecutionSprite.hpp">
       <Filter>Graphics</Filter>
     </ClInclude>
@@ -138,6 +144,24 @@
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="SimulationState.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TaskSimulator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ScheduleEvent.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CommentEvent.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JobStatusEvent.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JobExecution.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

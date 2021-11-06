@@ -68,7 +68,7 @@ void ProblemSet::initializeTaskSet(XMLElement* tasks) {
 	ColorFactory colors;
 	
 	// Count the tasks
-	int task_count = 0;
+	unsigned int task_count = 0;
 	for (auto child = tasks->FirstChildElement("Task"); child; child = child->NextSiblingElement("Task"))
 		++task_count;
 	this->numTasks = task_count;
@@ -81,7 +81,7 @@ void ProblemSet::initializeTaskSet(XMLElement* tasks) {
 
 	// We have a task set
 	taskSet = new Task * [task_count];
-	int task_index = 0;
+	unsigned int task_index = 0;
 	for (auto child = tasks->FirstChildElement("Task"); child; child = child->NextSiblingElement("Task")) {
 		double taskPhase, taskPeriod, taskCost, taskRelativeDeadline;
 
@@ -133,7 +133,7 @@ void ProblemSet::initializeTaskSet(XMLElement* tasks) {
 
 void ProblemSet::initializeAperiodics(XMLElement* jobs) {
 	// Count the jobs
-	int job_count = 0;
+	unsigned int job_count = 0;
 	for (auto child = jobs->FirstChildElement("Job"); child; child = child->NextSiblingElement("Job"))
 		++job_count;
 	this->numAperiodics = job_count;
@@ -146,7 +146,7 @@ void ProblemSet::initializeAperiodics(XMLElement* jobs) {
 
 	// We have a task set
 	aperiodicJobs = new Job * [job_count];
-	int job_index = 0;
+	unsigned int job_index = 0;
 	for (auto child = jobs->FirstChildElement("Job"); child; child = child->NextSiblingElement("Job")) {
 		double jobRelease, jobDeadline, jobAbsDeadline, jobCost;
 

@@ -15,18 +15,18 @@ public:
 
 	inline Task** getTaskSet() const { return taskSet; }
 	inline Task** getTaskSet(int& nTasks) const { nTasks = numTasks; return taskSet; }
-	inline int getTaskCount() const { return numTasks; }
+	inline unsigned int getTaskCount() const { return numTasks; }
 	inline Job** getAperiodics() const { return aperiodicJobs; }
 	inline Job** getAperiodics(int& nJobs) const { nJobs = numAperiodics; return aperiodicJobs; }
-	inline int getAperiodicCount() const { return numAperiodics; }
+	inline unsigned int getAperiodicCount() const { return numAperiodics; }
 	inline double getScheduleLength() const { return scheduleLength; }
 	inline unsigned int getProcessorCount() const { return processorCount; }
 	inline double getTimelineInterval() const { return timelineInterval; }
 
 	void loadProblem(std::string filename);
 private:
-	int numTasks;
-	int numAperiodics;
+	unsigned int numTasks;
+	unsigned int numAperiodics;
 	Task** taskSet;
 	Job** aperiodicJobs;
 	double scheduleLength;

@@ -154,16 +154,19 @@
     <ClCompile Include="MouseoverRegistration.cpp" />
     <ClCompile Include="ProblemSet.cpp" />
     <ClCompile Include="ResourceAccessSprite.cpp" />
+    <ClCompile Include="Scheduler.cpp" />
     <ClCompile Include="ScheduleSprite.cpp" />
     <ClCompile Include="SimulationState.cpp" />
     <ClCompile Include="SpriteMaker.cpp" />
     <ClCompile Include="Task.cpp" />
+    <ClCompile Include="TaskSimulator.cpp" />
     <ClCompile Include="TimelineSprite.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ColorFactory.hpp" />
+    <ClInclude Include="CommentEvent.hpp" />
     <ClInclude Include="FontFactory.hpp" />
     <ClInclude Include="Job.hpp" />
     <ClInclude Include="JobCompletionSprite.hpp" />
@@ -171,14 +174,18 @@
     <ClInclude Include="JobExecution.hpp" />
     <ClInclude Include="JobExecutionSprite.hpp" />
     <ClInclude Include="JobReleaseSprite.hpp" />
+    <ClInclude Include="JobStatusEvent.hpp" />
     <ClInclude Include="MouseoverRegistration.hpp" />
     <ClInclude Include="ProblemSet.hpp" />
     <ClInclude Include="ResourceAccessParameter.h" />
     <ClInclude Include="ResourceAccessSprite.hpp" />
+    <ClInclude Include="Scheduler.hpp" />
     <ClInclude Include="ScheduleSprite.hpp" />
     <ClInclude Include="SimulationState.hpp" />
     <ClInclude Include="SpriteMaker.hpp" />
     <ClInclude Include="Task.hpp" />
+    <ClInclude Include="ScheduleEvent.hpp" />
+    <ClInclude Include="TaskSimulator.hpp" />
     <ClInclude Include="TimelineSprite.hpp" />
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="Utility.hpp" />
