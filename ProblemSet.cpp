@@ -38,13 +38,13 @@ void ProblemSet::loadProblem(string filename) {
 
 ProblemSet::~ProblemSet() {
 	if (taskSet) {
-		for (int i = 0; i < numTasks; ++i)
+		for (auto i = 0u; i < numTasks; ++i)
 			delete taskSet[i];
 		delete[] taskSet;
 	}
 
 	if (aperiodicJobs) {
-		for (int i = 0; i < numAperiodics; ++i)
+		for (auto i = 0u; i < numAperiodics; ++i)
 			delete aperiodicJobs[i];
 		delete[] aperiodicJobs;
 	}
