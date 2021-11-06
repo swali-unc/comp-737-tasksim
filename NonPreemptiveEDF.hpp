@@ -14,6 +14,7 @@ public:
 	virtual void onJobRelease(double time, Job* job);
 	virtual void onJobFinish(double time, Job* job);
 	virtual void onJobDeadline(double time, Job* job);
+	virtual void onJobSliceFinish(double time, Job* job);
 	virtual void onResourceRequest(double time, Job* job, std::string resourceName);
 	virtual void onResourceFinish(double time, Job* job, std::string resourceName);
 	virtual void onTimer(double time, void* timerdata);

@@ -39,5 +39,6 @@ private:
 	double time;
 	Job* currentJob;
 	double currentJobStart;
+	double currentDuration;
 };
 

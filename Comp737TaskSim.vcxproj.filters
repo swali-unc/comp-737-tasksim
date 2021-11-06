@@ -197,9 +197,6 @@
     <ClInclude Include="JobExecution.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Scheduler.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="NonPreemptiveEDF.hpp">
       <Filter>Schedulers</Filter>
     </ClInclude>
@@ -232,6 +229,9 @@
     </ClInclude>
     <ClInclude Include="SimulationView.hpp">
       <Filter>MVC</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler.hpp">
+      <Filter>Schedulers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

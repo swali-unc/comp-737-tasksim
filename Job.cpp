@@ -3,6 +3,36 @@
 using std::string;
 using std::vector;
 
+double Job::getNextResourceAccess(string& resourceName) const {
+	double minAccess = -1;
+
+	for(auto& i : resourceAccess) {
+		if(currentTime < i.start) {
+			if(minAccess < 0 || minAccess < i.start) {
+				minAccess = i.start;
+				resourceName = i.resourceName;
+			}
+		}
+	}
+
+	return minAccess - currentTime;
+}
+
+double Job::getNextResourceRelease(string& resourceName) const {
+	double minAccess = -1;
+
+	for(auto& i : resourceAccess) {
+		if(currentTime < i.start + i.duration) {
+			if(minAccess < 0 || minAccess < i.start + i.duration) {
+				minAccess = i.start + i.duration;
+				resourceName = i.resourceName;
+			}
+		}
+	}
+
+	return minAccess - currentTime;
+}
+
 JobExecution* Job::executeJob(double executionTime, double execStart) {
 	JobExecution* jExec = new JobExecution(*this, execStart, executionTime);
 

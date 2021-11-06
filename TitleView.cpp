@@ -31,7 +31,7 @@ TitleView::TitleView() :
 	loadProbButton->setButtonPosition(50, 50);
 
 	titleText.centerOrigin();
-	titleText.getCachedSprite()->setPosition(round(WINDOW_WIDTH / 2), round(WINDOW_HEIGHT * .5f / 2));
+	titleText.getCachedSprite()->setPosition((float)round(WINDOW_WIDTH / 2), (float)round(WINDOW_HEIGHT * .5f / 2));
 }
 
 TitleView::~TitleView() {

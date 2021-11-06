@@ -18,14 +18,41 @@ bool TaskSimulator::Simulate() {
 
 	auto nextEvent = upcomingEventQueue.top();
 	auto nextEventTime = nextEvent ? nextEvent->getStart() : SimulationState::Instance()->getProblem()->getTimelineInterval();
-	bool nextEventIsCompletion = false;
-	printf("Next event time: %f\n", nextEventTime);
+	//bool nextEventIsCompletion = false, nextEventIsResourceAccess = false, nextEventIsResourceRelease = false;
+	enum _nextEventType {
+		UNKNOWN, COMPLETION, RESOURCEACCESS, RESOURCERELEASE, TIMEFINISH
+	};
+	_nextEventType nextEventType;
+	string resource;
+	//printf("Next event time: %f\n", nextEventTime);
 	if (currentJob) {
 		auto remainingCost = currentJob->getRemainingCost();
+
+		// Will we hit a resource access/release?
+		string resourceName, resourceReleaseName;
+		auto timeTillResource = currentJob->getNextResourceAccess(resourceName);
+		auto timeTillResourceRelease = currentJob->getNextResourceRelease(resourceReleaseName);
+		if(timeTillResource > 0 && time + timeTillResource < nextEventTime) {
+			nextEventTime = time + timeTillResource;
+			nextEventType = RESOURCEACCESS;
+			resource = resourceName;
+		}
+
+		if(timeTillResourceRelease > 0 && time + timeTillResourceRelease < nextEventTime) {
+			nextEventType = RESOURCERELEASE;
+			resource = resourceName;
+			nextEventTime = time + timeTillResourceRelease;
+		}
+
+		if(currentJobStart + currentDuration < nextEventTime) {
+			nextEventType = TIMEFINISH;
+			nextEventTime = currentJobStart + currentDuration;
+		}
+		
 		if (currentJobStart + remainingCost < nextEventTime ) {
 			// Our current job will finish executing before the next event
 			// so the real next event is a job completion
-			nextEventIsCompletion = true;
+			nextEventType = COMPLETION;
 			nextEventTime = currentJobStart + remainingCost;
 		}
 	}
@@ -35,17 +62,28 @@ bool TaskSimulator::Simulate() {
 	time = nextEventTime;
 	if (currentJob) {
 		auto job = currentJob;
-		//schedule.push_back(job->executeJob(elapsedTime,startTime));
-		//job->executeJob(elapsedTime);
 
 		// Job finish event
-		if (nextEventIsCompletion) {
+		if (nextEventType == COMPLETION) {
 			schedule.push_back(job->executeJob(time - currentJobStart, currentJobStart));
 
 			schedule.push_back(new JobFinishEvent(time, *job));
 			currentJobs.erase(std::find(currentJobs.begin(), currentJobs.end(), job));
 			currentJob = nullptr;
 			sched->onJobFinish(time, job);
+			return true;
+		}
+		else if(nextEventType == RESOURCEACCESS) {
+			sched->onResourceRequest(time, job, resource);
+			return true;
+		}
+		else if(nextEventType == RESOURCERELEASE) {
+			sched->onResourceFinish(time, job, resource);
+			return true;
+		}
+		else if(nextEventType == TIMEFINISH) {
+			sched->onJobSliceFinish(time, job);
+			StopExecutingCurrentJob();
 			return true;
 		}
 	}
@@ -152,6 +190,7 @@ bool TaskSimulator::Schedule(Job* job, double duration) {
 	//currentJob = new JobExecution(*job, time, duration);
 	currentJob = job;
 	currentJobStart = time;
+	currentDuration = duration;
 	//schedule.push_back(currentJob);
 	return true;
 }

@@ -29,6 +29,9 @@ void NonPreemptiveEDF::onJobFinish(double time, Job* job) {
 void NonPreemptiveEDF::onJobDeadline(double time, Job* job) {
 }
 
+void NonPreemptiveEDF::onJobSliceFinish(double time, Job* job) {
+}
+
 void NonPreemptiveEDF::onResourceRequest(double time, Job* job, std::string resourceName) {
 }
 
