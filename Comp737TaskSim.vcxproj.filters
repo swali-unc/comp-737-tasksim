@@ -93,9 +93,6 @@
     <ClCompile Include="TaskSimulator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JobExecution.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="NonPreemptiveEDF.cpp">
       <Filter>Schedulers</Filter>
     </ClCompile>
@@ -105,14 +102,8 @@
     <ClCompile Include="UIButton.cpp">
       <Filter>UI</Filter>
     </ClCompile>
-    <ClCompile Include="ButtonView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TextSprite.cpp">
       <Filter>Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="ViewManager.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OpenFileView.cpp">
       <Filter>MVC</Filter>
@@ -128,6 +119,18 @@
     </ClCompile>
     <ClCompile Include="DLLScheduler.cpp">
       <Filter>Schedulers</Filter>
+    </ClCompile>
+    <ClCompile Include="ButtonView.cpp">
+      <Filter>MVC</Filter>
+    </ClCompile>
+    <ClCompile Include="JobExecution.cpp">
+      <Filter>Data Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="ViewManager.cpp">
+      <Filter>MVC</Filter>
+    </ClCompile>
+    <ClCompile Include="CommentSprite.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -188,18 +191,6 @@
     <ClInclude Include="TaskSimulator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ScheduleEvent.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CommentEvent.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="JobStatusEvent.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="JobExecution.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="NonPreemptiveEDF.hpp">
       <Filter>Schedulers</Filter>
     </ClInclude>
@@ -215,14 +206,8 @@
     <ClInclude Include="ViewObject.hpp">
       <Filter>MVC</Filter>
     </ClInclude>
-    <ClInclude Include="ButtonView.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TextSprite.hpp">
       <Filter>Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="ViewManager.hpp">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="OpenFileView.hpp">
       <Filter>MVC</Filter>
@@ -238,6 +223,27 @@
     </ClInclude>
     <ClInclude Include="DLLScheduler.hpp">
       <Filter>Schedulers</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonView.hpp">
+      <Filter>MVC</Filter>
+    </ClInclude>
+    <ClInclude Include="JobExecution.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="JobStatusEvent.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="ScheduleEvent.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="CommentEvent.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewManager.hpp">
+      <Filter>MVC</Filter>
+    </ClInclude>
+    <ClInclude Include="CommentSprite.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -144,6 +144,7 @@
   <ItemGroup>
     <ClCompile Include="ButtonView.cpp" />
     <ClCompile Include="ColorFactory.cpp" />
+    <ClCompile Include="CommentSprite.cpp" />
     <ClCompile Include="DLLScheduler.cpp" />
     <ClCompile Include="FontFactory.cpp" />
     <ClCompile Include="Job.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="ButtonView.hpp" />
     <ClInclude Include="ColorFactory.hpp" />
     <ClInclude Include="CommentEvent.hpp" />
+    <ClInclude Include="CommentSprite.hpp" />
     <ClInclude Include="DLLScheduler.hpp" />
     <ClInclude Include="FontFactory.hpp" />
     <ClInclude Include="Job.hpp" />

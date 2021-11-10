@@ -6,6 +6,7 @@
 #include <string>
 
 #include "JobStatusEvent.hpp"
+#include "CommentEvent.hpp"
 #include "MouseoverRegistration.hpp"
 
 using namespace sf;
@@ -30,6 +31,7 @@ void SimulationView::createTimeline(unsigned int proc) {
 	vector<JobExecution> executions;
 	vector<pair<double, string>> completions;
 	vector<pair<double, string>> deadlines;
+	vector<pair<double, string>> comments;
 	
 	auto schedule = SimulationState::Instance()->getSimulator()->getSchedule(proc);
 	for(auto& i : schedule) {
@@ -53,6 +55,11 @@ void SimulationView::createTimeline(unsigned int proc) {
 		case ScheduleEventType::DeadlineEvent:
 			deadlines.push_back(
 				make_pair<double, string>(i->getStart(), ((JobDeadlineEvent*)i)->getJob()->createLabel())
+			);
+			break;
+		case ScheduleEventType::CommentEvent:
+			comments.push_back(
+				make_pair<double, string>(i->getStart(), ((CommentEvent*)i)->getComment())
 			);
 			break;
 		};

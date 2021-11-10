@@ -7,6 +7,7 @@ class TextSprite : public SpriteMaker
 {
 public:
 	TextSprite(std::string text, sf::Color fontColor, unsigned int fontSize);
+	virtual ~TextSprite() { }
 
 	void centerOrigin();
 private:

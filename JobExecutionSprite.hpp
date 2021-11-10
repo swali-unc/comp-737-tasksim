@@ -11,6 +11,7 @@ class JobExecutionSprite : public SpriteMaker
 public:
 	JobExecutionSprite(double height, JobExecution& job, double widthPerCost);
 	JobExecutionSprite(double height, double width, std::string label, sf::Color color);
+	virtual ~JobExecutionSprite() { }
 
 	inline double getHeight() const { return height; }
 	inline double getWidth() const { return width; }

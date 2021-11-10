@@ -10,6 +10,7 @@
 class TimelineSprite : public SpriteMaker {
 public:
 	TimelineSprite(double start, double interval, double end, float spacing, float dashlen) noexcept;
+	virtual ~TimelineSprite() { }
 
 	inline double getStart() const { return start; }
 	inline double getInterval() const { return interval; }

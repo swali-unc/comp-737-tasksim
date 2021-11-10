@@ -15,7 +15,7 @@ public:
 		std::pair<double,std::string>* releaseLabels = nullptr, unsigned int numReleases = 0,
 		std::pair<double,std::string>* deadlineLabels = nullptr, unsigned int numDeadlines = 0,
 		std::pair<double,std::string>* completionLabels = nullptr, unsigned int numCompletions = 0);
-	~ScheduleSprite();
+	virtual ~ScheduleSprite();
 
 	inline double getStart() const { return start; }
 	inline double getEnd() const { return end; }

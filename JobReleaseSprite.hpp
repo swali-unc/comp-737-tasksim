@@ -12,7 +12,7 @@ class JobReleaseSprite : public SpriteMaker
 public:
 	static JobReleaseSprite* Instance();
 
-	~JobReleaseSprite();
+	virtual ~JobReleaseSprite();
 private:
 	static JobReleaseSprite* _instance;
 

@@ -7,6 +7,7 @@ class ResourceAccessSprite : public SpriteMaker
 {
 public:
 	ResourceAccessSprite(float width, float height, sf::Color color);
+	virtual ~ResourceAccessSprite() { }
 
 	inline float getWidth() const { return width; }
 	inline float getHeight() const { return height; }
