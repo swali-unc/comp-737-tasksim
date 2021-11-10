@@ -5,6 +5,9 @@
 #include "ScheduleSprite.hpp"
 #include "TextSprite.hpp"
 
+#include <vector>
+#include <utility>
+
 class SimulationView : public ButtonView
 {
 public:
@@ -27,7 +30,11 @@ private:
 	UIButton* timeForwardBtn;
 	UIButton* timeBackwardBtn;
 	TextSprite* currentTimeSprite;
+	TextSprite** processorNames;
+	std::vector<std::pair<double,UIButton*>> errors;
 
 	void createTimeSprite();
+
+	void ErrorButtonCallback(double time);
 };
 

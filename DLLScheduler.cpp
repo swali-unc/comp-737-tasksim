@@ -72,9 +72,9 @@ void DLLScheduler::onResourceFinish(double time, Job* job, std::string resourceN
 		ojrf(time, (void*)job, resourceName.c_str(), proc);
 }
 
-void DLLScheduler::onTimer(double time, void* timerdata) {
+void DLLScheduler::onTimer(double time, void* callbackPointer, void* timerPointer) {
 	if(ot)
-		ot(time, timerdata);
+		ot(time, callbackPointer, timerPointer);
 }
 
 void DLLScheduler::onIdle(double time, unsigned int proc) {

@@ -55,7 +55,7 @@ void NonPreemptiveEDF::onResourceRequest(double time, Job* job, std::string reso
 void NonPreemptiveEDF::onResourceFinish(double time, Job* job, std::string resourceName, unsigned int proc) {
 }
 
-void NonPreemptiveEDF::onTimer(double time, void* timerdata) {
+void NonPreemptiveEDF::onTimer(double time, void* timerdata, void* timerpointer) {
 }
 
 void NonPreemptiveEDF::onIdle(double time, unsigned int proc) {

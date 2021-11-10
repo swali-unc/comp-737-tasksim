@@ -26,6 +26,9 @@ DLLMODE void GetAvailableJobs(size_t& numJobs, void**& jobPointers);
 DLLMODE bool IsIdle(unsigned int proc);
 DLLMODE unsigned int GetProcessorCount();
 
+DLLMODE double GetTime();
+DLLMODE void* RegisterTimer(double time, void* callbackPointer);
+
 // If the dll doesn't want to import the class, it can just use these helper exports
 DLLMODE double GetJobCost(void* job);
 DLLMODE double GetRemainingCost(void* job);

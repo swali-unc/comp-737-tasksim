@@ -159,7 +159,7 @@
     <ClCompile Include="OpenFileView.cpp" />
     <ClCompile Include="ProblemSet.cpp" />
     <ClCompile Include="ResourceAccessSprite.cpp" />
-    <ClCompile Include="Scheduler.cpp" />
+    <ClCompile Include="SchedulerExports.cpp" />
     <ClCompile Include="ScheduleSprite.cpp" />
     <ClCompile Include="SimulationState.cpp" />
     <ClCompile Include="SimulationView.cpp" />

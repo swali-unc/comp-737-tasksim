@@ -21,11 +21,17 @@ auto constexpr TIME_BUTTON_WIDTH = 30u;
 auto constexpr TIME_BUTTON_HEIGHT = 30u;
 auto constexpr INCREMENTS_TO_SHOW = 40.f;
 auto constexpr TIME_LABEL_SIZE = 12u;
+auto constexpr PROC_LABEL_SIZE = 15u;
+auto constexpr ERROR_BUTTON_WIDTH = 150u;
+auto constexpr ERROR_BUTTON_HEIGHT = 30u;
+auto constexpr MAX_LETTERS_IN_ERROR_BUTTON = 20;
 #define TIME_LABEL_COLOR Color::Black
+#define PROC_LABEL_COLOR Color::Black
 
 bool SimulationView::Render(RenderWindow& window, Vector2f mouse, bool clicked) {
 	for(auto i = 0u; i < procCount; ++i) {
 		window.draw(*timelines[i]->getCachedSprite());
+		window.draw(*processorNames[i]->getCachedSprite());
 	}
 
 	// Also render buttons
@@ -35,14 +41,19 @@ bool SimulationView::Render(RenderWindow& window, Vector2f mouse, bool clicked) 
 
 void SimulationView::timeBackward() {
 	auto interval = SimulationState::Instance()->getProblem()->getTimelineInterval();
+	auto maxTime = SimulationState::Instance()->getProblem()->getScheduleLength();
 	auto oneChunk = interval * INCREMENTS_TO_SHOW;
 	auto timeDelta = oneChunk / 2.f;
 	auto nextStart = timeStart - timeDelta;
 	auto nextEnd = timeEnd - timeDelta;
-	if(nextStart < 0) {
+
+	if(nextStart < 0)
 		nextStart = 0;
-		nextEnd = oneChunk;
-	}
+	if(nextEnd > maxTime)
+		nextEnd = maxTime;
+
+	if(timeStart == nextStart)
+		return;
 	timeStart = nextStart;
 	timeEnd = nextEnd;
 	CreateRenders();
@@ -55,10 +66,14 @@ void SimulationView::timeForward() {
 	auto nextStart = timeStart + timeDelta;
 	auto nextEnd = timeEnd + timeDelta;
 	auto maxTime = SimulationState::Instance()->getProblem()->getScheduleLength();
-	if(nextEnd > maxTime) {
-		nextStart = maxTime - oneChunk;
+
+	if(nextStart < 0)
+		nextStart = 0;
+	if(nextEnd > maxTime)
 		nextEnd = maxTime;
-	}
+
+	if(timeStart == nextStart)
+		return;
 	timeStart = nextStart;
 	timeEnd = nextEnd;
 	CreateRenders();
@@ -83,6 +98,22 @@ void SimulationView::createTimeline(unsigned int proc) {
 	
 	auto schedule = SimulationState::Instance()->getSimulator()->getSchedule(proc);
 	for(auto& i : schedule) {
+		if(simulationInProgress && i->getType() == ScheduleEventType::CommentEvent) {
+			// In this scenario, we need to know about all errors.
+			string comment = ((CommentEvent*)i)->getComment();
+			if(comment.length() > MAX_LETTERS_IN_ERROR_BUTTON)
+				comment = comment.substr(0, MAX_LETTERS_IN_ERROR_BUTTON - 3) + "...";
+			errors.push_back(
+				make_pair<double,UIButton*>(
+					i->getStart(),
+					new UIButton(comment,
+						bind(&SimulationView::ErrorButtonCallback,this,i->getStart()),
+						ERROR_BUTTON_WIDTH, ERROR_BUTTON_HEIGHT)) );
+			auto btn = errors.at(errors.size() - 1).second;
+			btn->setButtonPosition(1280 - ERROR_BUTTON_WIDTH, 10.f + (errors.size() - 1) * (ERROR_BUTTON_HEIGHT + 5.f));
+			registerButton(btn);
+		}
+
 		if(i->getStart() > timeEnd || i->getStart() < timeStart)
 			continue;
 
@@ -136,8 +167,29 @@ void SimulationView::createTimeSprite() {
 	currentTimeSprite->getCachedSprite()->setPosition(25.f, 30.f + TIME_BUTTON_HEIGHT + 5.f);
 }
 
+void SimulationView::ErrorButtonCallback(double time) {
+	auto interval = SimulationState::Instance()->getProblem()->getTimelineInterval();
+	auto duration = SimulationState::Instance()->getProblem()->getScheduleLength();
+	auto oneChunk = interval * INCREMENTS_TO_SHOW;
+	auto timeDelta = oneChunk / 2.f;
+	auto nextStart = time - timeDelta;
+	auto nextEnd = time + timeDelta;
+	if(nextStart < 0)
+		nextStart = 0;
+	if(nextEnd > duration)
+		nextEnd = duration;
+
+	if(timeStart == nextStart)
+		return;
+
+	timeStart = nextStart;
+	timeEnd = nextEnd;
+	CreateRenders();
+}
+
 SimulationView::SimulationView() : ButtonView() {
 	currentTimeSprite = nullptr;
+	processorNames = nullptr;
 	simulationInProgress = true;
 	procCount = SimulationState::Instance()->getProblem()->getProcessorCount();
 
@@ -145,9 +197,12 @@ SimulationView::SimulationView() : ButtonView() {
 	timeEnd = INCREMENTS_TO_SHOW * SimulationState::Instance()->getProblem()->getTimelineInterval();
 
 	timelines = new ScheduleSprite * [procCount];
+	processorNames = new TextSprite * [procCount];
 	for(auto i = 0u; i < procCount; ++i) {
 		timelines[i] = nullptr;
 		createTimeline(i);
+		processorNames[i] = new TextSprite(stringprintf("Processor %u", i), PROC_LABEL_COLOR, PROC_LABEL_SIZE);
+		processorNames[i]->getCachedSprite()->setPosition(5.f, 100.f + (float)(100 * i) + PROC_LABEL_SIZE);
 	}
 
 	timeForwardBtn = new UIButton(">", bind(&SimulationView::timeForward, this), TIME_BUTTON_WIDTH, TIME_BUTTON_HEIGHT);
@@ -157,15 +212,23 @@ SimulationView::SimulationView() : ButtonView() {
 	registerButton(timeForwardBtn);
 	registerButton(timeBackwardBtn);
 	createTimeSprite();
+	simulationInProgress = false;
 }
 
 SimulationView::~SimulationView() {
 	for(auto i = 0u; i < procCount; ++i) {
-		if(timelines[i])
+		if(timelines && timelines[i])
 			delete timelines[i];
+		if(processorNames && processorNames[i])
+			delete processorNames[i];
 	}
 
-	delete[] timelines;
+	if( timelines )
+		delete[] timelines;
+	if( processorNames )
+		delete[] processorNames;
+	for(auto& i : errors)
+		delete i.second;
 
 	if(timeForwardBtn) delete timeForwardBtn;
 	if(timeBackwardBtn) delete timeBackwardBtn;

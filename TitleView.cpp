@@ -40,5 +40,5 @@ TitleView::~TitleView() {
 
 void OpenFileCallback() {
 	ViewManager::Instance()->queueClear();
-	ViewManager::Instance()->queueView(new OpenFileView("Waiting for problem XML to be selected..", "XML\0*.XML\0All\0*.*\0"));
+	ViewManager::Instance()->queueView(new OpenFileView("Waiting for problem XML to be selected..", "XML\0*.XML\0All\0*.*\0\0"));
 }

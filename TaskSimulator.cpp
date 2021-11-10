@@ -9,6 +9,7 @@
 using std::find;
 using std::string;
 using std::vector;
+using std::pair;
 
 bool TaskSimulator::Simulate() {
 	auto sched = SimulationState::Instance()->getScheduler();
@@ -75,9 +76,25 @@ bool TaskSimulator::Simulate() {
 
 	//printf("%f: next event type %d @ %f on proc %u\n", time, nextEventType, nextEventTime, nextEventProc);
 
+	// Do we have a timer that will hit before any of the current events?
+	pair<double, void*>* earliestTimer = nullptr;
+	for(auto& i : timers) {
+		// This needs to be a timer in the future, and less than our next event
+		if(i->first > time && time - i->first < nextEventTime) {
+			nextEventTime = i->first;
+			earliestTimer = i;
+		}
+	}
+
 	auto elapsedTime = nextEventTime - time;
 	auto startTime = time;
 	time = nextEventTime;
+
+	if(earliestTimer) {
+		// We had a timer go off
+		sched->onTimer(time, earliestTimer->second, (void*)earliestTimer);
+		return true;
+	}
 
 	// Execute on all jobs on all processors by that time
 	/*for(auto i = 0u; i < procCount; ++i) {
@@ -279,6 +296,27 @@ bool TaskSimulator::StopExecutingCurrentJob(unsigned int proc) {
 	return true;
 }
 
+double TaskSimulator::getRemainingCostOfJob(Job* job) {
+	auto procCount = SimulationState::Instance()->getProblem()->getProcessorCount();
+
+	// Is this job on a processor?
+	for(auto i = 0u; i < procCount; ++i) {
+		if(currentJobOnProc[i] == job) {
+			// This is an active job, lets find out how much time is remaining
+			auto elapsedTime = (time - currentJobStart[i]);
+			return job->getRemainingCost() - elapsedTime;
+		}
+	}
+
+	return job->getRemainingCost();
+}
+
+void* TaskSimulator::registerTimer(double delta, void* callbackData) {
+	auto newTimer = new pair<double, void*>(time + delta, callbackData);
+	timers.push_back(newTimer);
+	return (void*)newTimer;
+}
+
 void TaskSimulator::logScheduleError(string errorText, unsigned int proc) {
 	schedules[proc].push_back(new CommentEvent(time, errorText));
 	SimulationState::Instance()->logError(time, errorText);
@@ -339,6 +377,10 @@ void TaskSimulator::Destroy() {
 		delete[] currentJobStart;
 	if(currentDuration)
 		delete[] currentDuration;
+
+	for(auto& i : timers)
+		delete i;
+	timers.clear();
 }
 
 TaskSimulator::TaskSimulator() noexcept {

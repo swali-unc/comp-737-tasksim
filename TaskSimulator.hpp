@@ -19,7 +19,6 @@ public:
 	void Reset();
 	
 	bool Schedule(Job* job, double duration, unsigned int proc);
-	//bool ScheduleJob(Job* job, double start, double duration);
 	bool StopExecutingCurrentJob(unsigned int proc);
 	bool IsIdle(unsigned int proc) const { return currentJobOnProc[proc] == nullptr; }
 	Job* GetJobOnProcessor(unsigned int proc) const { return currentJobOnProc[proc]; }
@@ -30,7 +29,11 @@ public:
 
 	double getTime() const { return time; }
 	void logScheduleError(std::string errorText, unsigned int proc);
+
+	void* registerTimer(double delta, void* callbackData);
+	double getRemainingCostOfJob(Job* job);
 private:
+	std::vector<std::pair<double, void*>*> timers;
 
 	std::priority_queue<ScheduleEvent*, std::vector<ScheduleEvent*>, ScheduleEventComparator> upcomingEventQueue;
 	std::priority_queue<Job*, std::vector<Job*>, JobReleaseComparator> upcomingJobReleases;

@@ -6,9 +6,16 @@
 
 using std::vector;
 
+void RecordError(const char* text);
+
 CEXPORT bool Schedule(unsigned int proc, void* job, double duration) {
+	if(duration < 0) {
+		RecordError("Schedule: Negative duration given");
+		return false;
+	}
+
 	if(proc >= SimulationState::Instance()->getProblem()->getProcessorCount()) {
-		RecordError(0, "Schedule given bad processor index");
+		RecordError("Schedule given bad processor index");
 		return false;
 	}
 
@@ -17,7 +24,7 @@ CEXPORT bool Schedule(unsigned int proc, void* job, double duration) {
 
 CEXPORT bool RecordError(unsigned int proc, const char* str) {
 	if(proc >= SimulationState::Instance()->getProblem()->getProcessorCount()) {
-		RecordError(0, "Record error given bad processor index");
+		RecordError("Record error given bad processor index");
 		return false;
 	}
 	
@@ -25,9 +32,13 @@ CEXPORT bool RecordError(unsigned int proc, const char* str) {
 	return true;
 }
 
+void RecordError(const char* text) {
+	RecordError(0, text);
+}
+
 CEXPORT bool StopCurrentJob(unsigned int proc) {
 	if(proc >= SimulationState::Instance()->getProblem()->getProcessorCount()) {
-		RecordError(0, "StopCurrentJob given bad processor index");
+		RecordError("StopCurrentJob given bad processor index");
 		return false;
 	}
 	return SimulationState::Instance()->getSimulator()->StopExecutingCurrentJob(proc);
@@ -47,7 +58,7 @@ CEXPORT void GetAvailableJobs(size_t& numJobs, void**& jobPointers) {
 
 CEXPORT bool IsIdle(unsigned int proc) {
 	if(proc >= SimulationState::Instance()->getProblem()->getProcessorCount()) {
-		RecordError(0, "IsIdle given bad processor index");
+		RecordError("IsIdle given bad processor index");
 		return false;
 	}
 	return SimulationState::Instance()->getSimulator()->IsIdle(proc);
@@ -59,7 +70,7 @@ CEXPORT unsigned int GetProcessorCount() {
 
 CEXPORT void* GetJobOnProcessor(unsigned int proc) {
 	if(proc >= SimulationState::Instance()->getProblem()->getProcessorCount()) {
-		RecordError(0, "GetJobOnProcessor given bad processor index");
+		RecordError("GetJobOnProcessor given bad processor index");
 		return nullptr;
 	}
 	return (void*)SimulationState::Instance()->getSimulator()->GetJobOnProcessor(proc);
@@ -74,9 +85,21 @@ CEXPORT int GetLatestAssignedProcessor(void* job) {
 }
 
 CEXPORT double GetRemainingCost(void* job) {
-	return ((Job*)job)->getRemainingCost();
+	//return ((Job*)job)->getRemainingCost();
+	
+	// The reason we do this is because the simulator only progresses the job pointer
+	//  accumulated runtime when it needs to
+	return SimulationState::Instance()->getSimulator()->getRemainingCostOfJob((Job*)job);
 }
 
 CEXPORT double GetAbsoluteDeadline(void* job) {
 	return ((Job*)job)->getAbsoluteDeadline();
+}
+
+CEXPORT void* RegisterTimer(double time, void* callbackPointer) {
+	return SimulationState::Instance()->getSimulator()->registerTimer(time, callbackPointer);
+}
+
+CEXPORT double GetTime() {
+	return SimulationState::Instance()->getSimulator()->getTime();
 }

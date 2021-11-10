@@ -14,7 +14,7 @@ typedef void (*OnJobDeadline)(double, void*);
 typedef void (*OnJobSliceFinish)(double, void*, unsigned int);
 typedef void (*OnJobResourceRequest)(double, void*, const char*, unsigned int);
 typedef void (*OnJobResourceFinish)(double, void*, const char*, unsigned int);
-typedef void (*OnTimer)(double, void*);
+typedef void (*OnTimer)(double, void*, void*);
 typedef void (*OnIdle)(double, unsigned int);
 typedef unsigned long (*IdentifyAsScheduler)(unsigned long);
 
@@ -30,7 +30,7 @@ public:
 	virtual void onJobSliceFinish(double time, Job* job, unsigned int proc) override;
 	virtual void onResourceRequest(double time, Job* job, std::string resourceName, unsigned int proc) override;
 	virtual void onResourceFinish(double time, Job* job, std::string resourceName, unsigned int proc) override;
-	virtual void onTimer(double time, void* timerdata) override;
+	virtual void onTimer(double time, void* callbackData, void* timerPointer) override;
 	virtual void onIdle(double time, unsigned int proc) override;
 private:
 	HMODULE library;

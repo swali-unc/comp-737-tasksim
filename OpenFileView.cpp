@@ -19,6 +19,9 @@ using std::runtime_error;
 using std::thread;
 using std::exception;
 
+auto constexpr PROBLEM_DIR = "Problems\\";
+auto constexpr SCHEDULER_DIR = "Schedulers\\";
+
 void* OpenFileThread(void* data);
 
 bool OpenFileView::Render(RenderWindow& window, Vector2f mouse, bool clicked) {
@@ -45,7 +48,7 @@ bool OpenFileView::Render(RenderWindow& window, Vector2f mouse, bool clicked) {
 				ViewManager::Instance()->queueClear();
 				ViewManager::Instance()->queueView(
 					new OpenFileView("Please select an algorithm DLL",
-						"Scheduling Algorithm DLL\0*.DLL\0All\0*.*\0")
+						"Scheduling Algorithm DLL\0*.DLL\0All\0*.*\0\0")
 				);
 				return false;
 			}
@@ -103,13 +106,22 @@ OpenFileView::~OpenFileView() {
 void* OpenFileThread(void* data) {
 	OpenFileView* view = (OpenFileView*)data;
 	const char* filetypes;
+	const char* defaultDir = nullptr;
 	view->LockObject();
 	view->fileOpenStatus = IN_DIALOG;
 	filetypes = view->filetypes;
+	if(!SimulationState::Instance()->getProblem())
+		defaultDir = PROBLEM_DIR;
+	else if(!SimulationState::Instance()->getScheduler())
+		defaultDir = SCHEDULER_DIR;
 	view->UnlockObject();
 
 	OPENFILENAMEA ofn = { 0 };
 	char szFile[_MAX_PATH] = { 0 };
+	ZeroMemory(&ofn,sizeof(ofn));
+	ZeroMemory(szFile, sizeof(szFile));
+
+	//strcpy_s(szFile, defaultDir);
 
 	// Initialize remaining fields of OPENFILENAME structure
 	ofn.lStructSize = sizeof(ofn);
@@ -120,8 +132,8 @@ void* OpenFileThread(void* data) {
 	ofn.nFilterIndex = 1;
 	ofn.lpstrFileTitle = NULL;
 	ofn.nMaxFileTitle = 0;
-	ofn.lpstrInitialDir = NULL;
-	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+	ofn.lpstrInitialDir = defaultDir;
+	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 
 	if(GetOpenFileNameA(&ofn)) {
 		// use ofn.lpstrFile here
