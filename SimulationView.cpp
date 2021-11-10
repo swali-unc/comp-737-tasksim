@@ -14,18 +14,61 @@ using std::vector;
 using std::pair;
 using std::make_pair;
 using std::string;
+using std::bind;
+
+auto constexpr TIME_BUTTON_WIDTH = 30u;
+auto constexpr TIME_BUTTON_HEIGHT = 30u;
+auto constexpr INCREMENTS_TO_SHOW = 40.f;
 
 bool SimulationView::Render(RenderWindow& window, Vector2f mouse, bool clicked) {
 	for(auto i = 0u; i < procCount; ++i) {
 		window.draw(*timelines[i]->getCachedSprite());
 	}
 
-	return true;
+	// Also render buttons
+	return ButtonView::Render(window, mouse, clicked);
+}
+
+void SimulationView::timeBackward() {
+	auto interval = SimulationState::Instance()->getProblem()->getTimelineInterval();
+	auto oneChunk = interval * INCREMENTS_TO_SHOW;
+	auto timeDelta = oneChunk / 2.f;
+	auto nextStart = timeStart - timeDelta;
+	auto nextEnd = timeEnd - timeDelta;
+	if(nextStart < 0) {
+		nextStart = 0;
+		nextEnd = oneChunk;
+	}
+	timeStart = nextStart;
+	timeEnd = nextEnd;
+	CreateRenders();
+}
+
+void SimulationView::timeForward() {
+	auto interval = SimulationState::Instance()->getProblem()->getTimelineInterval();
+	auto oneChunk = interval * INCREMENTS_TO_SHOW;
+	auto timeDelta = oneChunk / 2.f;
+	auto nextStart = timeStart + timeDelta;
+	auto nextEnd = timeEnd + timeDelta;
+	auto maxTime = SimulationState::Instance()->getProblem()->getScheduleLength();
+	if(nextEnd > maxTime) {
+		nextStart = maxTime - oneChunk;
+		nextEnd = maxTime;
+	}
+	timeStart = nextStart;
+	timeEnd = nextEnd;
+	CreateRenders();
+}
+
+void SimulationView::CreateRenders() {
+	// Clear the mouseover registrations
+	MouseoverRegistration::Instance()->clearView(this);
+	for(auto i = 0u; i < procCount; ++i)
+		createTimeline(i);
 }
 
 void SimulationView::createTimeline(unsigned int proc) {
 	if(timelines[proc]) delete timelines[proc];
-	ScheduleSprite* sprite;
 
 	vector<pair<double, string>> releases;
 	vector<JobExecution> executions;
@@ -65,18 +108,20 @@ void SimulationView::createTimeline(unsigned int proc) {
 		};
 	}
 
-	sprite = new ScheduleSprite(timeStart, timeEnd, SimulationState::Instance()->getProblem()->getTimelineInterval(),
+	auto sprite = new ScheduleSprite(timeStart, timeEnd, SimulationState::Instance()->getProblem()->getTimelineInterval(), this,
 		executions.data(), (unsigned int)executions.size(),
 		releases.data(), (unsigned int)releases.size(),
 		deadlines.data(), (unsigned int)deadlines.size(),
-		completions.data(), (unsigned int)completions.size());
+		completions.data(), (unsigned int)completions.size(),
+		comments.data(), (unsigned int)comments.size()
+	);
 
 	timelines[proc] = sprite;
-	sprite->getCachedSprite()->setPosition(100.f, (float)(100 * (proc + 1)));
-	sprite->doMouseoverRegistrations(100.f, (float)(100 * (proc+1)));
+	sprite->getCachedSprite()->setPosition(100.f, 50.f + (float)(100 * proc));
+	sprite->doMouseoverRegistrations(100.f, 50.f + (float)(100 * proc));
 }
 
-SimulationView::SimulationView() : ViewObject() {
+SimulationView::SimulationView() : ButtonView() {
 	simulationInProgress = true;
 	procCount = SimulationState::Instance()->getProblem()->getProcessorCount();
 
@@ -85,11 +130,18 @@ SimulationView::SimulationView() : ViewObject() {
 		timelines[i] = nullptr;
 
 	timeStart = 0;
-	timeEnd = 40 * SimulationState::Instance()->getProblem()->getTimelineInterval();
+	timeEnd = INCREMENTS_TO_SHOW * SimulationState::Instance()->getProblem()->getTimelineInterval();
 
-	MouseoverRegistration::Instance()->clearAll();
+	//MouseoverRegistration::Instance()->clearAll();
 	for(auto i = 0u; i < procCount; ++i)
 		createTimeline(i);
+
+	timeForwardBtn = new UIButton(">", bind(&SimulationView::timeForward, this), TIME_BUTTON_WIDTH, TIME_BUTTON_HEIGHT);
+	timeBackwardBtn = new UIButton("<", bind(&SimulationView::timeBackward, this), TIME_BUTTON_WIDTH, TIME_BUTTON_HEIGHT);
+	timeForwardBtn->setButtonPosition(25.f + TIME_BUTTON_WIDTH + 5.f, 30.f);
+	timeBackwardBtn->setButtonPosition(25.f, 30.f);
+	registerButton(timeForwardBtn);
+	registerButton(timeBackwardBtn);
 }
 
 SimulationView::~SimulationView() {
@@ -99,4 +151,8 @@ SimulationView::~SimulationView() {
 	}
 
 	delete[] timelines;
+
+	if(timeForwardBtn) delete timeForwardBtn;
+	if(timeBackwardBtn) delete timeBackwardBtn;
+	MouseoverRegistration::Instance()->clearView(this);
 }

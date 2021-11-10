@@ -13,6 +13,12 @@ CEXPORT void OnJobRelease(double time, void* job) {
             break;
         }
     }
+
+    static bool once = false;
+    if(!once && time > 5) {
+        once = true;
+        RecordError(0, "test error comment");
+    }
 }
 
 CEXPORT void OnJobFinish(double time, void* job, unsigned int proc) {

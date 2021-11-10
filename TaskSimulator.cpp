@@ -124,7 +124,7 @@ bool TaskSimulator::Simulate() {
 				sched->onIdle(time,i);
 		}
 
-		if(time >= SimulationState::Instance()->getProblem()->getTimelineInterval()) {
+		if(time >= SimulationState::Instance()->getProblem()->getScheduleLength()) {
 			// We're at the end, process all jobs and finish up
 		}
 		return true;

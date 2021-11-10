@@ -7,7 +7,7 @@ class JobCompletionSprite : public SpriteMaker
 {
 public:
 	static JobCompletionSprite* Instance();
-	virtual ~JobCompletionSprite() { }
+	virtual ~JobCompletionSprite();
 private:
 	static JobCompletionSprite* _instance;
 

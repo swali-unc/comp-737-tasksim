@@ -19,9 +19,6 @@
     <Filter Include="Graphics">
       <UniqueIdentifier>{b18495d4-ddb5-4d50-815d-abd42585ade6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="TaskSim">
-      <UniqueIdentifier>{caccc002-c9df-41e5-8094-6f5e7f2365b1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Schedulers">
       <UniqueIdentifier>{4a7c9856-5996-4faf-91ef-7f276e344f50}</UniqueIdentifier>
     </Filter>
@@ -33,6 +30,9 @@
     </Filter>
     <Filter Include="DH">
       <UniqueIdentifier>{99e58c89-c7eb-428a-b49a-c3c7f3d069e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Externals">
+      <UniqueIdentifier>{caccc002-c9df-41e5-8094-6f5e7f2365b1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -70,10 +70,7 @@
       <Filter>Graphics</Filter>
     </ClCompile>
     <ClCompile Include="tinyxml2.cpp">
-      <Filter>TaskSim</Filter>
-    </ClCompile>
-    <ClCompile Include="MouseoverRegistration.cpp">
-      <Filter>TaskSim</Filter>
+      <Filter>Externals</Filter>
     </ClCompile>
     <ClCompile Include="JobCompletionSprite.cpp">
       <Filter>Graphics</Filter>
@@ -130,7 +127,10 @@
       <Filter>MVC</Filter>
     </ClCompile>
     <ClCompile Include="CommentSprite.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="MouseoverRegistration.cpp">
+      <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -165,10 +165,7 @@
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="tinyxml2.h">
-      <Filter>TaskSim</Filter>
-    </ClInclude>
-    <ClInclude Include="MouseoverRegistration.hpp">
-      <Filter>TaskSim</Filter>
+      <Filter>Externals</Filter>
     </ClInclude>
     <ClInclude Include="JobCompletionSprite.hpp">
       <Filter>Graphics</Filter>
@@ -193,9 +190,6 @@
     </ClInclude>
     <ClInclude Include="NonPreemptiveEDF.hpp">
       <Filter>Schedulers</Filter>
-    </ClInclude>
-    <ClInclude Include="SchedulerExports.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TitleView.hpp">
       <Filter>MVC</Filter>
@@ -243,7 +237,13 @@
       <Filter>MVC</Filter>
     </ClInclude>
     <ClInclude Include="CommentSprite.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="SchedulerExports.h">
+      <Filter>Schedulers</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseoverRegistration.hpp">
+      <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

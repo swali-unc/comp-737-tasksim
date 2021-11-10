@@ -16,6 +16,7 @@ public:
 	JobExecution(Job& job, double start, double duration) noexcept;
 	JobExecution() noexcept : ScheduleEvent(0,0) {} // Dummy constructor
 	JobExecution(const JobExecution& copyObj) noexcept;
+	virtual ~JobExecution() { }
 
 	inline Job* getJob() const { return job; }
 	inline void addResourceAccess(double time, double duration, std::string name) { resourceAccess.push_back({ name,time,duration }); }

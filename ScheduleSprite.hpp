@@ -6,15 +6,19 @@
 #include <string>
 #include <vector>
 #include "JobExecution.hpp"
+#include "ViewObject.hpp"
 
 class ScheduleSprite : public SpriteMaker
 {
 public:
 	ScheduleSprite(double start, double end, double interval,
+		ViewObject* parentView,
 		JobExecution* runningJobs, unsigned int numJobs,
 		std::pair<double,std::string>* releaseLabels = nullptr, unsigned int numReleases = 0,
 		std::pair<double,std::string>* deadlineLabels = nullptr, unsigned int numDeadlines = 0,
-		std::pair<double,std::string>* completionLabels = nullptr, unsigned int numCompletions = 0);
+		std::pair<double,std::string>* completionLabels = nullptr, unsigned int numCompletions = 0,
+		std::pair<double,std::string>* comments = nullptr, unsigned int numComments = 0
+	);
 	virtual ~ScheduleSprite();
 
 	inline double getStart() const { return start; }
@@ -27,18 +31,23 @@ public:
 private:
 	virtual sf::RenderTexture* createRenderTexture();
 	virtual void applySpriteTransforms(sf::Sprite* sprite);
+	ViewObject* parentView;
 
 	double start;
 	double end;
 	double interval;
+
 	JobExecution* runningJobs;
 	unsigned int numJobs;
+
 	std::pair<double, std::string>* releaseLabels;
 	unsigned int numReleases;
 	std::pair<double, std::string>* deadlineLabels;
 	unsigned int numDeadlines;
 	std::pair<double, std::string>* completionLabels;
 	unsigned int numCompletions;
+	std::pair<double, std::string>* comments;
+	unsigned int numComments;
 
 	std::vector<std::pair<sf::FloatRect, std::string>> moReg;
 };

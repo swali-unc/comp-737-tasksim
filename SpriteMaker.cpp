@@ -37,4 +37,5 @@ SpriteMaker::SpriteMaker() noexcept {
 
 SpriteMaker::~SpriteMaker() {
 	if (renderTexture) delete renderTexture;
+	if(cachedSprite) delete cachedSprite;
 }

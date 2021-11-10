@@ -14,7 +14,7 @@ class SpriteMaker
 public:
 	void initialize();
 	sf::Sprite* createSprite();
-	inline sf::Sprite* getCachedSprite() { if(!cachedSprite) cachedSprite = createSprite(); return cachedSprite; }
+	inline sf::Sprite* getCachedSprite() { if(!cachedSprite) { cachedSprite = createSprite(); } return cachedSprite; }
 
 	SpriteMaker() noexcept;
 	virtual ~SpriteMaker();

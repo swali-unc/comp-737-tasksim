@@ -11,7 +11,7 @@ class JobDeadlineSprite : public SpriteMaker
 {
 public:
 	static JobDeadlineSprite* Instance();
-	virtual ~JobDeadlineSprite() { }
+	virtual ~JobDeadlineSprite();
 private:
 	static JobDeadlineSprite* _instance;
 

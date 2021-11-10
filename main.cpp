@@ -13,6 +13,7 @@
 #include "JobDeadlineSprite.hpp"
 #include "JobCompletionSprite.hpp"
 #include "TimelineSprite.hpp"
+#include "CommentSprite.hpp"
 #include "ProblemSet.hpp"
 #include "ScheduleSprite.hpp"
 #include "MouseoverRegistration.hpp"
@@ -117,9 +118,13 @@ int main(int argc, char* argv[]) {
 	if(mouseoverRender) delete mouseoverRender;
 
 	// Delete global instances
+	// Sprites
 	delete JobReleaseSprite::Instance();
 	delete JobDeadlineSprite::Instance();
 	delete JobCompletionSprite::Instance();
+	delete CommentSprite::Instance();
+
+	// States
 	delete MouseoverRegistration::Instance();
 	delete SimulationState::Instance();
 

@@ -7,6 +7,7 @@
 #include "JobDeadlineSprite.hpp"
 #include "JobReleaseSprite.hpp"
 #include "JobCompletionSprite.hpp"
+#include "CommentSprite.hpp"
 #include "ResourceAccessSprite.hpp"
 #include "FontFactory.hpp"
 #include "MouseoverRegistration.hpp"
@@ -40,9 +41,9 @@ RenderTexture* ScheduleSprite::createRenderTexture() {
 	double height = ceil((double)timelineSprite->getGlobalBounds().height + MAX_JOB_HEIGHT) + EXCESS_HEIGHT;
 
 	// Do we have deadlines and/or releases?
-	Sprite* deadlineSprite = JobDeadlineSprite::Instance()->createSprite();
-	Sprite* releaseSprite = JobReleaseSprite::Instance()->createSprite();
-	Sprite* completionSprite = JobCompletionSprite::Instance()->createSprite();
+	Sprite* deadlineSprite = JobDeadlineSprite::Instance()->getCachedSprite();
+	Sprite* releaseSprite = JobReleaseSprite::Instance()->getCachedSprite();
+	Sprite* completionSprite = JobCompletionSprite::Instance()->getCachedSprite();
 	double arrowHeight = 0;
 	auto updateMaxHeight = [&arrowHeight](unsigned int count, double height) { if (count && arrowHeight < height) arrowHeight = height; };
 	updateMaxHeight(numDeadlines, deadlineSprite->getGlobalBounds().height);
@@ -54,8 +55,6 @@ RenderTexture* ScheduleSprite::createRenderTexture() {
 	RenderTexture* render = new RenderTexture();
 	if (!render) {
 		delete timelineSprite;
-		delete deadlineSprite;
-		delete releaseSprite;
 		throw std::runtime_error("ScheduleSprite- could not create render texture");
 	}
 
@@ -75,7 +74,7 @@ RenderTexture* ScheduleSprite::createRenderTexture() {
 	// Now we need to render all of the job slices and place them on the timeline
 	double widthPerCost = TIMELINE_SPACING / interval;
 	for (auto i = 0u; i < numJobs; ++i) {
-		if(runningJobs[i].getStart() > end)
+		if(runningJobs[i].getStart() > end || runningJobs[i].getStart() < start)
 			continue;
 		JobExecutionSprite jExecSprite(JOB_HEIGHT, runningJobs[i], widthPerCost);
 		Sprite* jSprite = jExecSprite.createSprite();
@@ -120,7 +119,7 @@ RenderTexture* ScheduleSprite::createRenderTexture() {
 	auto renderArrows = [this,widthPerCost,height,timelineHeight,&render](Sprite* sprite, unsigned int num, pair<double, string>* entries, string prependText = "") {
 		for (auto i = 0u; i < num; ++i) {
 			auto startTime = entries[i].first;
-			if(startTime > end)
+			if(startTime > end || startTime < start)
 				continue;
 			auto label = entries[i].second;
 			sprite->setPosition((float)((startTime - start) * widthPerCost) + LEFT_SHIFT, (float)(height - timelineHeight));
@@ -157,6 +156,8 @@ RenderTexture* ScheduleSprite::createRenderTexture() {
 		renderArrows(deadlineSprite, numDeadlines, deadlineLabels, "Deadline: ");
 	if (numCompletions)
 		renderArrows(completionSprite, numCompletions, completionLabels, "Complete: ");
+	if (numComments)
+		renderArrows(CommentSprite::Instance()->getCachedSprite(), numComments, comments, "Comment: ");
 
 	render->display();
 	return render;
@@ -172,7 +173,7 @@ void ScheduleSprite::doMouseoverRegistrations(float x, float y) const {
 		rect.left += x;
 		rect.top += y;
 
-		mReg->registerRect(rect, label);
+		mReg->registerRect(parentView, rect, label);
 	}
 }
 
@@ -180,10 +181,13 @@ void ScheduleSprite::applySpriteTransforms(Sprite*) {
 }
 
 ScheduleSprite::ScheduleSprite(double start, double end, double interval,
+	ViewObject* parentView,
 	JobExecution* runningJobs, unsigned int numJobs,
-	std::pair<double, std::string>* releaseLabels, unsigned int numReleases,
-	std::pair<double, std::string>* deadlineLabels, unsigned int numDeadlines,
-	std::pair<double, std::string>* completionLabels, unsigned int numCompletions)
+	pair<double, string>* releaseLabels, unsigned int numReleases,
+	pair<double, string>* deadlineLabels, unsigned int numDeadlines,
+	pair<double, string>* completionLabels, unsigned int numCompletions,
+	pair<double, string>* comments, unsigned int numComments
+)
 	: SpriteMaker() {
 	this->start = start;
 	this->end = end;
@@ -196,8 +200,13 @@ ScheduleSprite::ScheduleSprite(double start, double end, double interval,
 	this->numDeadlines = numDeadlines;
 	this->completionLabels = completionLabels;
 	this->numCompletions = numCompletions;
+	this->comments = comments;
+	this->numComments = numComments;
+	this->parentView = parentView;
 	initialize();
 }
 
 ScheduleSprite::~ScheduleSprite() {
+	//Can't clear our entire view's mouseovers
+	//MouseoverRegistration::Instance()->clearView(parentView);
 }

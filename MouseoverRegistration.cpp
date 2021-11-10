@@ -32,16 +32,20 @@ bool MouseoverRegistration::detectCollision(Vector2f center, float radius, strin
 	map<void*, bool> visitedMap;
 
 	for (auto& i : pointList) {
-		for (auto& v : circles) {
-			if (visitedMap.find((void*)&v) == visitedMap.end() && detectCollisionSimple(i, v.first)) {
-				textDestination += v.second;
-				visitedMap[(void*)&v] = true;
+		for(auto& m : circles) {
+			for(auto& v : m.second) {
+				if(visitedMap.find((void*)&v) == visitedMap.end() && detectCollisionSimple(i, v.first)) {
+					textDestination += v.second;
+					visitedMap[(void*)&v] = true;
+				}
 			}
 		}
-		for (auto& v : rects) {
-			if (visitedMap.find((void*)&v) == visitedMap.end() && detectCollisionSimple(i, v.first)) {
-				textDestination += v.second;
-				visitedMap[(void*)&v] = true;
+		for(auto& m : rects) {
+			for(auto& v : m.second) {
+				if(visitedMap.find((void*)&v) == visitedMap.end() && detectCollisionSimple(i, v.first)) {
+					textDestination += v.second;
+					visitedMap[(void*)&v] = true;
+				}
 			}
 		}
 	}
@@ -49,23 +53,35 @@ bool MouseoverRegistration::detectCollision(Vector2f center, float radius, strin
 	return textDestination.length() != 0;
 }
 
-void MouseoverRegistration::registerRect(FloatRect rect, string text) {
-	rects.push_back(make_pair(rect, text + "\n"));
+void MouseoverRegistration::registerRect(ViewObject* parent, FloatRect rect, string text) {
+	rects[parent].push_back(make_pair(rect, text + "\n"));
 }
 
-void MouseoverRegistration::registerCircle(Vector2f center, float radius, string text) {
-	circles.push_back(make_pair(make_pair(center, radius),text + "\n"));
+void MouseoverRegistration::registerCircle(ViewObject* parent, Vector2f center, float radius, string text) {
+	circles[parent].push_back(make_pair(make_pair(center, radius),text + "\n"));
 }
 
 void MouseoverRegistration::clearAll() {
+	for(auto& i : circles)
+		i.second.clear();
+	for(auto& i : rects)
+		i.second.clear();
 	circles.clear();
 	rects.clear();
+}
+
+void MouseoverRegistration::clearView(ViewObject* parent) {
+	for(auto& i : circles[parent])
+		i.second.clear();
+	for(auto& i : rects[parent])
+		i.second.clear();
 }
 
 MouseoverRegistration::MouseoverRegistration() {
 }
 
 MouseoverRegistration::~MouseoverRegistration() {
+	clearAll();
 }
 
 MouseoverRegistration* MouseoverRegistration::_instance = nullptr;

@@ -25,7 +25,7 @@ public:
 	Job* GetJobOnProcessor(unsigned int proc) const { return currentJobOnProc[proc]; }
 
 	bool Simulate();
-	std::vector<Job*> getCurrentJobs() const { return currentJobs; } //C++11 will move, not copy
+	std::vector<Job*> getCurrentJobs() const { return currentJobs; }
 	std::vector<ScheduleEvent*> getSchedule(unsigned int proc) const { return schedules[proc]; }
 
 	double getTime() const { return time; }
