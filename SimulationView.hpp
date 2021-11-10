@@ -3,6 +3,7 @@
 #include "ButtonView.hpp"
 
 #include "ScheduleSprite.hpp"
+#include "TextSprite.hpp"
 
 class SimulationView : public ButtonView
 {
@@ -25,5 +26,8 @@ private:
 	ScheduleSprite** timelines;
 	UIButton* timeForwardBtn;
 	UIButton* timeBackwardBtn;
+	TextSprite* currentTimeSprite;
+
+	void createTimeSprite();
 };
 

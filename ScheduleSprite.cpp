@@ -168,12 +168,11 @@ void ScheduleSprite::doMouseoverRegistrations(float x, float y) const {
 
 	for (auto& i : moReg) {
 		auto rect = i.first;
-		auto label = i.second;
 
 		rect.left += x;
 		rect.top += y;
 
-		mReg->registerRect(parentView, rect, label);
+		mReg->registerRect(parentView, rect, i.second);
 	}
 }
 

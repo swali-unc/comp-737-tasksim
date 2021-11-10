@@ -8,7 +8,7 @@ class UIButton : private SpriteMaker
 {
 public:
 	UIButton(std::string text, std::function<void()> callback, unsigned int width, unsigned int height);
-	~UIButton();
+	virtual ~UIButton();
 
 	inline unsigned int getHeight() const { return height; }
 	inline unsigned int getWidth() const { return width; }

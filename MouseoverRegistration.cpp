@@ -27,6 +27,7 @@ bool MouseoverRegistration::detectCollision(Vector2f center, float radius, strin
 		Vector2f(center - Vector2f(diagonalOffset,diagonalOffset)), // Top left
 		Vector2f(center + Vector2f(-diagonalOffset,diagonalOffset)), // bottom left
 		Vector2f(center + Vector2f(diagonalOffset,-diagonalOffset)), // bottom right
+		Vector2f(center), // center center
 	};
 
 	map<void*, bool> visitedMap;
@@ -71,10 +72,12 @@ void MouseoverRegistration::clearAll() {
 }
 
 void MouseoverRegistration::clearView(ViewObject* parent) {
-	for(auto& i : circles[parent])
+	/*for(auto& i : circles[parent])
 		i.second.clear();
 	for(auto& i : rects[parent])
-		i.second.clear();
+		i.second.clear();*/
+	circles[parent].clear();
+	rects[parent].clear();
 }
 
 MouseoverRegistration::MouseoverRegistration() {
