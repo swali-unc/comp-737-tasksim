@@ -40,19 +40,19 @@ bool OpenFileView::Render(RenderWindow& window, Vector2f mouse, bool clicked) {
 			problem = new ProblemSet(filepath);
 			auto ss = SimulationState::Instance();
 			ss->setProblem(problem);
-			printf("Problem set\n");
+			//printf("Problem set\n");
 			// TODO: next view should be to pick an algorithm
 			//ss->setScheduler(new NonPreemptiveEDF());
 			ss->setScheduler(new DLLScheduler("Schedulers\\NPEDF.dll"));
-			printf("Scheduler set\n");
+			//printf("Scheduler set\n");
 
 			// TODO: simulation in progress view
 			ss->setSimulation(new TaskSimulator());
-			printf("Simulation set\n");
+			//printf("Simulation set\n");
 			ss->getSimulator()->LoadProblem();
-			printf("Simulation set\n");
+			//printf("Simulation set\n");
 			while(ss->getSimulator()->getTime() < ss->getProblem()->getScheduleLength()) {
-				printf("Simulating %f\n", ss->getSimulator()->getTime());
+				//printf("Simulating %f\n", ss->getSimulator()->getTime());
 				ss->getSimulator()->Simulate();
 			}
 
