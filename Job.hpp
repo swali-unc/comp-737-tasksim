@@ -45,6 +45,8 @@ public:
 	inline void setColor(sf::Color color) { this->color = color; }
 	inline void addResourceAccess(double time, double duration, std::string name) { resourceAccess.push_back({name,time,duration}); }
 	inline std::vector<ResourceAccessParameter>& getResourceParameters() { return resourceAccess; }
+	inline int getLatestAssignedProcessor() const { return task ? task->getLatestAssignedProcessor() : lastProcessor; }
+	inline void setAssignedProcessor(unsigned int proc) { lastProcessor = (int)proc; if(task) task->setLatestAssignedProcessor(proc); }
 
 	double getNextResourceAccess(std::string& resourceName) const;
 	double getNextResourceRelease(std::string& resourceName) const;
@@ -58,6 +60,7 @@ private:
 	double remainingCost;
 	double currentTime;
 	sf::Color color;
+	int lastProcessor;
 
 	std::vector<ResourceAccessParameter> resourceAccess;
 	std::map<std::string, bool> heldResources;

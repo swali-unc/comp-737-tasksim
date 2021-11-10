@@ -75,6 +75,8 @@ RenderTexture* ScheduleSprite::createRenderTexture() {
 	// Now we need to render all of the job slices and place them on the timeline
 	double widthPerCost = TIMELINE_SPACING / interval;
 	for (auto i = 0u; i < numJobs; ++i) {
+		if(runningJobs[i].getStart() > end)
+			continue;
 		JobExecutionSprite jExecSprite(JOB_HEIGHT, runningJobs[i], widthPerCost);
 		Sprite* jSprite = jExecSprite.createSprite();
 		jSprite->setPosition((float)((runningJobs[i].getStart() - start) * widthPerCost) + LEFT_SHIFT, (float)(height - timelineHeight));
@@ -118,6 +120,8 @@ RenderTexture* ScheduleSprite::createRenderTexture() {
 	auto renderArrows = [this,widthPerCost,height,timelineHeight,&render](Sprite* sprite, unsigned int num, pair<double, string>* entries, string prependText = "") {
 		for (auto i = 0u; i < num; ++i) {
 			auto startTime = entries[i].first;
+			if(startTime > end)
+				continue;
 			auto label = entries[i].second;
 			sprite->setPosition((float)((startTime - start) * widthPerCost) + LEFT_SHIFT, (float)(height - timelineHeight));
 			render->draw(*sprite);

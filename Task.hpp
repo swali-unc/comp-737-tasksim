@@ -27,12 +27,15 @@ public:
 	inline void setColor(sf::Color color) { this->color = color; }
 	inline void addResourceAccess(double time, double duration, std::string name) { resourceAccess.push_back({ name,time,duration }); }
 	inline std::vector<ResourceAccessParameter>& getResourceParameters() { return resourceAccess; }
+	inline int getLatestAssignedProcessor() const { return lastProcessor; }
+	inline void setLatestAssignedProcessor(unsigned int proc) { lastProcessor = (int)proc; }
 private:
 	double phase;
 	double period;
 	double cost;
 	double rdeadline;
 	int index;
+	int lastProcessor;
 	sf::Color color;
 
 	std::vector<ResourceAccessParameter> resourceAccess;

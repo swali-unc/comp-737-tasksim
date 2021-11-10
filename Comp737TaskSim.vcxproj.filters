@@ -96,9 +96,6 @@
     <ClCompile Include="JobExecution.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Scheduler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="NonPreemptiveEDF.cpp">
       <Filter>Schedulers</Filter>
     </ClCompile>
@@ -125,6 +122,9 @@
     </ClCompile>
     <ClCompile Include="SimulationView.cpp">
       <Filter>MVC</Filter>
+    </ClCompile>
+    <ClCompile Include="Scheduler.cpp">
+      <Filter>Schedulers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

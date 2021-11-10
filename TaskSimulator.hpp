@@ -18,27 +18,30 @@ public:
 	void LoadProblem(ProblemSet* problem = nullptr);
 	void Reset();
 	
-	bool Schedule(Job* job, double duration);
+	bool Schedule(Job* job, double duration, unsigned int proc);
 	//bool ScheduleJob(Job* job, double start, double duration);
-	bool StopExecutingCurrentJob();
-	bool IsIdle() const { return currentJob == nullptr; }
+	bool StopExecutingCurrentJob(unsigned int proc);
+	bool IsIdle(unsigned int proc) const { return currentJobOnProc[proc] == nullptr; }
+	Job* GetJobOnProcessor(unsigned int proc) const { return currentJobOnProc[proc]; }
 
 	bool Simulate();
 	std::vector<Job*> getCurrentJobs() const { return currentJobs; } //C++11 will move, not copy
-	std::vector<ScheduleEvent*> getSchedule() const { return schedule; }
+	std::vector<ScheduleEvent*> getSchedule(unsigned int proc) const { return schedules[proc]; }
 
 	double getTime() const { return time; }
+	void logScheduleError(std::string errorText, unsigned int proc);
 private:
-	void logScheduleError(std::string errorText);
 
 	std::priority_queue<ScheduleEvent*, std::vector<ScheduleEvent*>, ScheduleEventComparator> upcomingEventQueue;
 	std::priority_queue<Job*, std::vector<Job*>, JobReleaseComparator> upcomingJobReleases;
 
-	std::vector<ScheduleEvent*> schedule;
+	std::vector<ScheduleEvent*>* schedules;
 	std::vector<Job*> currentJobs;
 	double time;
-	Job* currentJob;
-	double currentJobStart;
-	double currentDuration;
+	Job** currentJobOnProc;
+	double* currentJobStart;
+	double* currentDuration;
+
+	void Destroy();
 };
 

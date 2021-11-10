@@ -7,7 +7,7 @@ using std::runtime_error;
 
 constexpr auto WIDTH = 8;
 constexpr auto LINE_WIDTH = 2.f;
-constexpr auto HEIGHT = 80;
+constexpr auto HEIGHT = 55;
 constexpr auto LINE_HEIGHT = HEIGHT - 2.f;
 constexpr auto ARROW_WIDTH = WIDTH;
 constexpr auto ARROW_HEIGHT = WIDTH;

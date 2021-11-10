@@ -146,6 +146,7 @@ Job::Job(Task& t, double releaseTime, int index) noexcept
 	this->task = &t;
 	this->color = t.getColor();
 	this->resourceAccess = t.getResourceParameters();
+	this->lastProcessor = t.getLatestAssignedProcessor();
 }
 
 Job::Job(double releaseTime, double absDeadline, double relativeDeadline, double cost, int index) noexcept {
@@ -158,4 +159,5 @@ Job::Job(double releaseTime, double absDeadline, double relativeDeadline, double
 	this->remainingCost = cost;
 	this->currentTime = 0;
 	this->color = sf::Color::White;
+	this->lastProcessor = -1;
 }

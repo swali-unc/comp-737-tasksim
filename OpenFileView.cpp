@@ -46,6 +46,7 @@ bool OpenFileView::Render(RenderWindow& window, Vector2f mouse, bool clicked) {
 
 			// TODO: simulation in progress view
 			ss->setSimulation(new TaskSimulator());
+			printf("Simulation set\n");
 			ss->getSimulator()->LoadProblem();
 			printf("Simulation set\n");
 			while(ss->getSimulator()->getTime() < ss->getProblem()->getScheduleLength()) {

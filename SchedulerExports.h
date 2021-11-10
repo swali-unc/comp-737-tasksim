@@ -8,7 +8,11 @@
 
 #include "Job.hpp"
 
-DLLEXPORT bool Schedule(Job* job, double duration);
-DLLEXPORT bool StopCurrentJob();
-DLLEXPORT void GetAvailableJobs(size_t& numJobs, Job**& jobPointers);
-DLLEXPORT bool IsIdle();
+DLLEXPORT bool Schedule(unsigned int proc, void* job, double duration);
+DLLEXPORT bool StopCurrentJob(unsigned int proc);
+DLLEXPORT void* GetJobOnProcessor(unsigned int proc);
+DLLEXPORT bool RecordError(unsigned int proc, const char* str);
+
+DLLEXPORT void GetAvailableJobs(size_t& numJobs, void**& jobPointers);
+DLLEXPORT bool IsIdle(unsigned int proc);
+DLLEXPORT unsigned int GetProcessorCount();

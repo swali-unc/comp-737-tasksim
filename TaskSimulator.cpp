@@ -8,89 +8,121 @@
 
 using std::find;
 using std::string;
+using std::vector;
 
 bool TaskSimulator::Simulate() {
 	auto sched = SimulationState::Instance()->getScheduler();
 	if (!sched) {
-		logScheduleError("No scheduler loaded");
+		logScheduleError("No scheduler loaded",0);
 		return false;
 	}
 
+	auto procCount = SimulationState::Instance()->getProblem()->getProcessorCount();
 	auto nextEvent = upcomingEventQueue.top();
 	auto nextEventTime = nextEvent ? nextEvent->getStart() : SimulationState::Instance()->getProblem()->getTimelineInterval();
+	printf("Initial next event time %f\n", nextEventTime);
 	//bool nextEventIsCompletion = false, nextEventIsResourceAccess = false, nextEventIsResourceRelease = false;
 	enum _nextEventType {
 		UNKNOWN, COMPLETION, RESOURCEACCESS, RESOURCERELEASE, TIMEFINISH
 	};
-	_nextEventType nextEventType;
+	_nextEventType nextEventType = UNKNOWN;
 	string resource;
 	//printf("Next event time: %f\n", nextEventTime);
-	if (currentJob) {
-		auto remainingCost = currentJob->getRemainingCost();
 
-		// Will we hit a resource access/release?
-		string resourceName, resourceReleaseName;
-		auto timeTillResource = currentJob->getNextResourceAccess(resourceName);
-		auto timeTillResourceRelease = currentJob->getNextResourceRelease(resourceReleaseName);
-		if(timeTillResource > 0 && time + timeTillResource < nextEventTime) {
-			nextEventTime = time + timeTillResource;
-			nextEventType = RESOURCEACCESS;
-			resource = resourceName;
-		}
+	auto nextEventProc = 0u;
+	for(auto i = 0u; i < procCount; ++i) {
+		if(currentJobOnProc[i]) {
+			auto remainingCost = currentJobOnProc[i]->getRemainingCost();
 
-		if(timeTillResourceRelease > 0 && time + timeTillResourceRelease < nextEventTime) {
-			nextEventType = RESOURCERELEASE;
-			resource = resourceName;
-			nextEventTime = time + timeTillResourceRelease;
-		}
+			// Will we hit a resource access/release?
+			string resourceName, resourceReleaseName;
+			auto timeTillResource = currentJobOnProc[i]->getNextResourceAccess(resourceName);
+			auto timeTillResourceRelease = currentJobOnProc[i]->getNextResourceRelease(resourceReleaseName);
 
-		if(currentJobStart + currentDuration < nextEventTime) {
-			nextEventType = TIMEFINISH;
-			nextEventTime = currentJobStart + currentDuration;
-		}
-		
-		if (currentJobStart + remainingCost < nextEventTime ) {
-			// Our current job will finish executing before the next event
-			// so the real next event is a job completion
-			nextEventType = COMPLETION;
-			nextEventTime = currentJobStart + remainingCost;
+			if(timeTillResourceRelease > 0 && time + timeTillResourceRelease < nextEventTime) {
+				nextEventType = RESOURCERELEASE;
+				resource = resourceName;
+				nextEventTime = time + timeTillResourceRelease;
+				nextEventProc = i;
+			}
+
+			if(timeTillResource > 0 && time + timeTillResource < nextEventTime) {
+				nextEventTime = time + timeTillResource;
+				nextEventType = RESOURCEACCESS;
+				resource = resourceName;
+				nextEventProc = i;
+			}
+
+			if(currentJobStart[i] + remainingCost < nextEventTime) {
+				// Our current job will finish executing before the next event
+				// so the real next event is a job completion
+				nextEventType = COMPLETION;
+				nextEventTime = currentJobStart[i] + remainingCost;
+				nextEventProc = i;
+			}
+
+			if(currentJobStart[i] + currentDuration[i] < nextEventTime) {
+				nextEventType = TIMEFINISH;
+				nextEventTime = currentJobStart[i] + currentDuration[i];
+				nextEventProc = i;
+			}
+
+			printf("Set next time: %f (%d) - %u has %f+%f (%s)\n", nextEventTime, nextEventType, i,
+				currentJobStart[i], remainingCost,
+				currentJobOnProc[i]->createLabel().c_str());
 		}
 	}
+
+	printf("%f: next event type %d @ %f on proc %u\n", time, nextEventType, nextEventTime, nextEventProc);
 
 	auto elapsedTime = nextEventTime - time;
 	auto startTime = time;
 	time = nextEventTime;
-	if (currentJob) {
-		auto job = currentJob;
+
+	// Execute on all jobs on all processors by that time
+	/*for(auto i = 0u; i < procCount; ++i) {
+		if(currentJobOnProc[i]) {
+		}
+	}*/
+
+	// We have a job event and not a regular event
+	if(nextEventType != UNKNOWN) {
+		auto job = currentJobOnProc[nextEventProc];
 
 		// Job finish event
-		if (nextEventType == COMPLETION) {
-			schedule.push_back(job->executeJob(time - currentJobStart, currentJobStart));
+		if(nextEventType == COMPLETION) {
+			schedules[nextEventProc].push_back(job->executeJob(time - currentJobStart[nextEventProc], currentJobStart[nextEventProc]));
 
-			schedule.push_back(new JobFinishEvent(time, *job));
+			schedules[nextEventProc].push_back(new JobFinishEvent(time, *job));
 			currentJobs.erase(std::find(currentJobs.begin(), currentJobs.end(), job));
-			currentJob = nullptr;
-			sched->onJobFinish(time, job);
+			currentJobOnProc[nextEventProc] = nullptr;
+			printf("[%f] Cleared job %s\n", time, job->createLabel().c_str());
+			sched->onJobFinish(time, job, nextEventProc);
+			//delete job;
 			return true;
 		}
 		else if(nextEventType == RESOURCEACCESS) {
-			sched->onResourceRequest(time, job, resource);
+			sched->onResourceRequest(time, job, resource, nextEventProc);
 			return true;
 		}
 		else if(nextEventType == RESOURCERELEASE) {
-			sched->onResourceFinish(time, job, resource);
+			sched->onResourceFinish(time, job, resource, nextEventProc);
 			return true;
 		}
 		else if(nextEventType == TIMEFINISH) {
-			sched->onJobSliceFinish(time, job);
-			StopExecutingCurrentJob();
+			sched->onJobSliceFinish(time, job, nextEventProc);
+			StopExecutingCurrentJob(nextEventProc);
 			return true;
 		}
 	}
 
 	// There was no next event, we're at the end?
 	if (!nextEvent) {
-		sched->onIdle(time);
+		// Find idle-ness and notify our scheduler
+		for(auto i = 0u; i < procCount; ++i) {
+			if(IsIdle(i))
+				sched->onIdle(time,i);
+		}
 		return true;
 	}
 
@@ -98,10 +130,15 @@ bool TaskSimulator::Simulate() {
 	upcomingEventQueue.pop();
 
 	// Is it a job release?
+	// If these events have a processor previously associated with them, great, otherwise
+	//  we by default show the event on processor 0
 	auto eventType = nextEvent->getType();
 	if (eventType == ScheduleEventType::ReleaseEvent) {
 		JobReleaseEvent* releaseEvent = static_cast<JobReleaseEvent*>(nextEvent);
-		schedule.push_back(releaseEvent);
+		int latestProc = releaseEvent->getJob()->getLatestAssignedProcessor();
+		auto proc = latestProc < 0 ? 0u : (unsigned int)latestProc;
+
+		schedules[proc].push_back(releaseEvent);
 		currentJobs.push_back(releaseEvent->getJob());
 		sched->onJobRelease(time, releaseEvent->getJob());
 		return true;
@@ -110,19 +147,22 @@ bool TaskSimulator::Simulate() {
 	// Did we get a deadline?
 	if (eventType == ScheduleEventType::DeadlineEvent) {
 		JobDeadlineEvent* deadlineEvent = static_cast<JobDeadlineEvent*>(nextEvent);
-		schedule.push_back(deadlineEvent);
+		int latestProc = deadlineEvent->getJob()->getLatestAssignedProcessor();
+		auto proc = latestProc < 0 ? 0u : (unsigned int)latestProc;
+
+		schedules[proc].push_back(deadlineEvent);
 
 		// Did we miss a deadline?
 		if (deadlineEvent->getJob()->getRemainingCost() > 0) {
 			logScheduleError(stringprintf("Deadline missed for %s (%f)",
-				deadlineEvent->getJob()->createLabel().c_str(), time));
+				deadlineEvent->getJob()->createLabel().c_str(), time), proc);
 		}
 
 		sched->onJobDeadline(time, deadlineEvent->getJob());
 		return true;
 	}
 
-	logScheduleError(stringprintf("Error, unknown event type: %d", eventType));
+	logScheduleError(stringprintf("Error, unknown event type: %d", eventType), 0);
 	return false;
 }
 
@@ -163,18 +203,19 @@ void TaskSimulator::LoadProblem(ProblemSet* problem) {
 	// TODO: Now do sporadic
 }
 
-bool TaskSimulator::Schedule(Job* job, double duration) {
-	if (currentJob) {
-		if (currentJob == job) {
+bool TaskSimulator::Schedule(Job* job, double duration, unsigned int proc) {
+	if (currentJobOnProc[proc]) {
+		if (currentJobOnProc[proc] == job) {
 			// If it's the same job, then no need to do anything
 			//double currentDuration = currentJob->getDuration();
 			//currentJob->setDuration((currentDuration - (time - currentJobStart)) + duration);
-
+			//if(currentJobStart[proc] + currentDuration[proc] > time + duration)
+			currentDuration[proc] = (time - currentJobStart[proc]) + duration;
 			return true;
 		}
 
 		// End the current job execution at this time
-		StopExecutingCurrentJob();
+		StopExecutingCurrentJob(proc);
 	}
 
 	// Can't schedule this job if it isn't in our current job list
@@ -182,123 +223,126 @@ bool TaskSimulator::Schedule(Job* job, double duration) {
 		logScheduleError(stringprintf(
 			"Simulation Error: Algorithm tried to schedule job %s that has either not released yet or is unknown",
 			job->createLabel().c_str()
-		));
+		), proc );
 		return false;
+	}
+
+	// Is this job on another processor already?
+	auto procCount = SimulationState::Instance()->getProblem()->getProcessorCount();
+	for(auto i = 0u; i < procCount; ++i) {
+		if(i == proc) continue;
+		if(currentJobOnProc[i] == job) {
+			logScheduleError(stringprintf(
+				"Simulation Error: Algorithm tried to schedule job %s on processor %u that is executing on a different processor %u",
+				job->createLabel().c_str(), proc, i
+			), proc);
+			return false;
+		}
 	}
 
 	// schedule our new job
 	//currentJob = new JobExecution(*job, time, duration);
-	currentJob = job;
-	currentJobStart = time;
-	currentDuration = duration;
+	currentJobOnProc[proc] = job;
+	currentJobStart[proc] = time;
+	currentDuration[proc] = duration;
+	job->setAssignedProcessor(proc);
+	// Also need to find all other jobs with the same task
+	/*if(job->getRelatedTask()) {
+		for(auto& i : getCurrentJobs()) {
+			if(job->getRelatedTask() == i->getRelatedTask())
+				job->setAssignedProcessor(proc);
+		}
+	}*/
+	printf("%s assigned to proc %u for %f @ %f\n", job->createLabel().c_str(), proc, duration, time);
 	//schedule.push_back(currentJob);
 	return true;
 }
 
-bool TaskSimulator::StopExecutingCurrentJob() {
-	if (!currentJob) {
-		logScheduleError("Attempted to stop executing current job, but no job currently is executing.");
+bool TaskSimulator::StopExecutingCurrentJob(unsigned int proc) {
+	if (!currentJobOnProc[proc]) {
+		logScheduleError("Attempted to stop executing current job on processor, but no job currently is executing.",proc);
 		return false;
 	}
 
 	//currentJob->setDuration(time - currentJobStart);
-	if(currentJobStart < time) {
-		schedule.push_back(currentJob->executeJob(time - currentJobStart, currentJobStart));
+	if(currentJobStart[proc] < time) {
+		schedules[proc].push_back(currentJobOnProc[proc]->executeJob(time - currentJobStart[proc], currentJobStart[proc]));
 	}
 
-	currentJob = nullptr;
+	currentJobOnProc[proc] = nullptr;
 	return true;
 }
 
-void TaskSimulator::logScheduleError(string errorText) {
-	schedule.push_back(new CommentEvent(time, errorText));
+void TaskSimulator::logScheduleError(string errorText, unsigned int proc) {
+	schedules[proc].push_back(new CommentEvent(time, errorText));
 	SimulationState::Instance()->logError(time, errorText);
-	fprintf(stderr, "Scheduler error reported: %s\n", errorText.c_str());
+	fprintf(stderr, "[Proc %u] Scheduler error reported: %s\n", proc, errorText.c_str());
 }
 
 void TaskSimulator::Reset() {
 	time = 0;
-	currentJob = nullptr;
+	auto procCount = SimulationState::Instance()->getProblem()->getProcessorCount();
+	printf("proc count: %u\n", procCount);
+	Destroy();
+	printf("destroy done\n");
 
-	while (upcomingEventQueue.size()) {
+	currentJobOnProc = new Job* [procCount];
+	for(auto i = 0u; i < procCount; ++i)
+		currentJobOnProc[i] = nullptr;
+
+	schedules = new vector<ScheduleEvent*>[procCount];
+	currentDuration = new double[procCount];
+	currentJobStart = new double[procCount];
+}
+
+void TaskSimulator::Destroy() {
+	if(currentJobOnProc) {
+		delete[] currentJobOnProc;
+		currentJobOnProc = nullptr;
+	}
+	auto procCount = SimulationState::Instance()->getProblem()->getProcessorCount();
+
+	while(upcomingEventQueue.size()) {
 		delete upcomingEventQueue.top();
 		upcomingEventQueue.pop();
 	}
 
-	while (currentJobs.size()) {
+	while(currentJobs.size()) {
 		delete currentJobs[currentJobs.size() - 1];
 		currentJobs.pop_back();
 	}
 
-	while (upcomingJobReleases.size()) {
+	while(upcomingJobReleases.size()) {
 		delete upcomingJobReleases.top();
 		upcomingJobReleases.pop();
 	}
 
-	while (schedule.size()) {
-		delete schedule[schedule.size() - 1];
-		schedule.pop_back();
+	if(schedules) {
+		for(auto i = 0u; i < procCount; ++i) {
+			while(schedules[i].size()) {
+				delete schedules[i][schedules[i].size() - 1];
+				schedules[i].pop_back();
+			}
+		}
+
+		delete[] schedules;
+		schedules = nullptr;
 	}
+
+	if(currentJobStart)
+		delete[] currentJobStart;
+	if(currentDuration)
+		delete[] currentDuration;
 }
 
 TaskSimulator::TaskSimulator() noexcept {
+	currentJobOnProc = nullptr;
+	schedules = nullptr;
+	currentJobStart = nullptr;
+	currentDuration = nullptr;
 	Reset();
 }
 
 TaskSimulator::~TaskSimulator() {
-	Reset();
+	Destroy();
 }
-
-/*
-bool TaskSimulator::ScheduleJob(Job* job, double start, double duration) {
-	// Bad time given? Can't go back in time
-	if (time < start) {
-		string errorText = stringprintf("Simulation Error: Algorithm tried to schedule job %s in the past for [%s,%s)",
-			job->createLabel().c_str(),
-			to_string_trim(start).c_str(), to_string_trim(duration).c_str()
-		);
-		schedule.push_back(new CommentEvent(start, errorText));
-		SimulationState::Instance()->logError(start, errorText);
-		return false;
-	}
-
-	// Is this even a job that we have active?
-	if (find(currentJobs.begin(), currentJobs.end(), job) == currentJobs.end()) {
-		string errorText = stringprintf("Simulation Error: Algorithm tried to schedule job %s that has either not released yet or is unknown",
-			job->createLabel().c_str()
-		);
-		schedule.push_back(new CommentEvent(start,errorText));
-		SimulationState::Instance()->logError(start, errorText);
-		return false;
-	}
-
-	// Is anything else executing in this time slot?
-	for (auto& i : schedule) {
-		if (i->getType() == ScheduleEventType::ExecutionEvent) {
-			// Check if:
-			//  (1) our start point is inside of another execution slice
-			//  (2) our end point is inside of another execution slice
-			//  (3) we fully encompass another job
-			auto checkIfInSlice = [](double check, double start, double duration) {
-				// True if we're above the start of this slice and below the end of this slice
-				return start <= check && start + duration > check;
-			};
-			if (checkIfInSlice(start,i->getStart(),i->getDuration())
-				|| checkIfInSlice(start + duration, i->getStart(), i->getDuration())
-				|| (start <= i->getStart() && start + duration >= i->getStart() + i->getDuration())) {
-				string errorText = stringprintf("Simulation Error: Algorithm tried to schedule job %s at [%s,%s) but it conflicts with job %s",
-					job->createLabel().c_str(),
-					to_string_trim(start).c_str(), to_string_trim(duration).c_str(),
-					((JobExecution*)i)->getJob()->createLabel().c_str()
-				);
-				schedule.push_back(new CommentEvent(start,errorText));
-				SimulationState::Instance()->logError(start,errorText);
-				return false;
-			}
-		}
-	}
-
-	// Alright, schedule this sucker
-	schedule.push_back(new JobExecution(*job, start, duration));
-	return true;
-}*/
