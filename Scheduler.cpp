@@ -6,7 +6,7 @@
 
 using std::vector;
 
-DLLEXPORT bool Schedule(unsigned int proc, void* job, double duration) {
+CEXPORT bool Schedule(unsigned int proc, void* job, double duration) {
 	if(proc >= SimulationState::Instance()->getProblem()->getProcessorCount()) {
 		RecordError(0, "Schedule given bad processor index");
 		return false;
@@ -15,7 +15,7 @@ DLLEXPORT bool Schedule(unsigned int proc, void* job, double duration) {
 	return SimulationState::Instance()->getSimulator()->Schedule((Job*)job, duration, proc);
 }
 
-DLLEXPORT bool RecordError(unsigned int proc, const char* str) {
+CEXPORT bool RecordError(unsigned int proc, const char* str) {
 	if(proc >= SimulationState::Instance()->getProblem()->getProcessorCount()) {
 		RecordError(0, "Record error given bad processor index");
 		return false;
@@ -25,7 +25,7 @@ DLLEXPORT bool RecordError(unsigned int proc, const char* str) {
 	return true;
 }
 
-DLLEXPORT bool StopCurrentJob(unsigned int proc) {
+CEXPORT bool StopCurrentJob(unsigned int proc) {
 	if(proc >= SimulationState::Instance()->getProblem()->getProcessorCount()) {
 		RecordError(0, "StopCurrentJob given bad processor index");
 		return false;
@@ -33,7 +33,7 @@ DLLEXPORT bool StopCurrentJob(unsigned int proc) {
 	return SimulationState::Instance()->getSimulator()->StopExecutingCurrentJob(proc);
 }
 
-DLLEXPORT void GetAvailableJobs(size_t& numJobs, void**& jobPointers) {
+CEXPORT void GetAvailableJobs(size_t& numJobs, void**& jobPointers) {
 	auto currentJobs = SimulationState::Instance()->getSimulator()->getCurrentJobs();
 	numJobs = currentJobs.size();
 	if(!numJobs)
@@ -45,7 +45,7 @@ DLLEXPORT void GetAvailableJobs(size_t& numJobs, void**& jobPointers) {
 	jobPointers = (void**)jobList;
 }
 
-DLLEXPORT bool IsIdle(unsigned int proc) {
+CEXPORT bool IsIdle(unsigned int proc) {
 	if(proc >= SimulationState::Instance()->getProblem()->getProcessorCount()) {
 		RecordError(0, "IsIdle given bad processor index");
 		return false;
@@ -53,14 +53,30 @@ DLLEXPORT bool IsIdle(unsigned int proc) {
 	return SimulationState::Instance()->getSimulator()->IsIdle(proc);
 }
 
-DLLEXPORT unsigned int GetProcessorCount() {
+CEXPORT unsigned int GetProcessorCount() {
 	return SimulationState::Instance()->getProblem()->getProcessorCount();
 }
 
-DLLEXPORT void* GetJobOnProcessor(unsigned int proc) {
+CEXPORT void* GetJobOnProcessor(unsigned int proc) {
 	if(proc >= SimulationState::Instance()->getProblem()->getProcessorCount()) {
 		RecordError(0, "GetJobOnProcessor given bad processor index");
 		return nullptr;
 	}
 	return (void*)SimulationState::Instance()->getSimulator()->GetJobOnProcessor(proc);
+}
+
+CEXPORT double GetJobCost(void* job) {
+	return ((Job*)job)->getCost();
+}
+
+CEXPORT int GetLatestAssignedProcessor(void* job) {
+	return ((Job*)job)->getLatestAssignedProcessor();
+}
+
+CEXPORT double GetRemainingCost(void* job) {
+	return ((Job*)job)->getRemainingCost();
+}
+
+CEXPORT double GetAbsoluteDeadline(void* job) {
+	return ((Job*)job)->getAbsoluteDeadline();
 }

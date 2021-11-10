@@ -1,18 +1,33 @@
 #pragma once
 
-#if defined(_WIN32) || defined(_WIN64)
 #define DLLEXPORT __declspec(dllexport)
+#define DLLIMPORT __declspec(dllimport)
+#define CEXPORT extern "C" DLLEXPORT
+#define CIMPORT extern "C" DLLIMPORT
+
+#if defined(_WIN32) || defined(_WIN64)
+#ifdef TASKSIM_EXPORT
+#define DLLMODE CEXPORT
+#define DLLCLASSMODE DLLEXPORT
+#else
+#define DLLMODE CIMPORT
+#define DLLCLASSMODE DLLIMPORT
+#endif
 #else
 #error If compiling for not-windows, define DLLEXPORT for your shared objects
 #endif
 
-#include "Job.hpp"
+DLLMODE bool Schedule(unsigned int proc, void* job, double duration);
+DLLMODE bool StopCurrentJob(unsigned int proc);
+DLLMODE void* GetJobOnProcessor(unsigned int proc);
+DLLMODE bool RecordError(unsigned int proc, const char* str);
 
-DLLEXPORT bool Schedule(unsigned int proc, void* job, double duration);
-DLLEXPORT bool StopCurrentJob(unsigned int proc);
-DLLEXPORT void* GetJobOnProcessor(unsigned int proc);
-DLLEXPORT bool RecordError(unsigned int proc, const char* str);
+DLLMODE void GetAvailableJobs(size_t& numJobs, void**& jobPointers);
+DLLMODE bool IsIdle(unsigned int proc);
+DLLMODE unsigned int GetProcessorCount();
 
-DLLEXPORT void GetAvailableJobs(size_t& numJobs, void**& jobPointers);
-DLLEXPORT bool IsIdle(unsigned int proc);
-DLLEXPORT unsigned int GetProcessorCount();
+// If the dll doesn't want to import the class, it can just use these helper exports
+DLLMODE double GetJobCost(void* job);
+DLLMODE double GetRemainingCost(void* job);
+DLLMODE double GetAbsoluteDeadline(void* job);
+DLLMODE int GetLatestAssignedProcessor(void* job);

@@ -7,11 +7,13 @@
 
 #pragma once
 
+#include "SchedulerExports.h"
+
 #include <SFML/Graphics.hpp>
 #include "ResourceAccessParameter.h"
 #include <vector>
 
-class Task
+class DLLCLASSMODE Task
 {
 public:
 	Task(double phase, double period, double cost, double relativeDeadline, int index) noexcept;

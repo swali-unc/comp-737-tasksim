@@ -7,6 +7,7 @@
  */
 #pragma once
 
+#include "SchedulerExports.h"
 #include "Task.hpp"
 
 #include <SFML/Graphics.hpp>
@@ -19,7 +20,7 @@
 
 class JobExecution;
 
-class Job
+class DLLCLASSMODE Job
 {
 public:
 	Job(Task& t, int index = 0) noexcept;

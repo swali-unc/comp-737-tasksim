@@ -126,6 +126,9 @@
     <ClCompile Include="Scheduler.cpp">
       <Filter>Schedulers</Filter>
     </ClCompile>
+    <ClCompile Include="DLLScheduler.cpp">
+      <Filter>Schedulers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Task.hpp">
@@ -231,6 +234,9 @@
       <Filter>MVC</Filter>
     </ClInclude>
     <ClInclude Include="Scheduler.hpp">
+      <Filter>Schedulers</Filter>
+    </ClInclude>
+    <ClInclude Include="DLLScheduler.hpp">
       <Filter>Schedulers</Filter>
     </ClInclude>
   </ItemGroup>

@@ -10,6 +10,7 @@
 // These three includes will go away in future
 #include "SimulationView.hpp"
 #include "NonPreemptiveEDF.hpp"
+#include "DLLScheduler.hpp"
 #include "TaskSimulator.hpp"
 
 using namespace sf;
@@ -41,7 +42,8 @@ bool OpenFileView::Render(RenderWindow& window, Vector2f mouse, bool clicked) {
 			ss->setProblem(problem);
 			printf("Problem set\n");
 			// TODO: next view should be to pick an algorithm
-			ss->setScheduler(new NonPreemptiveEDF());
+			//ss->setScheduler(new NonPreemptiveEDF());
+			ss->setScheduler(new DLLScheduler("Schedulers\\NPEDF.dll"));
 			printf("Scheduler set\n");
 
 			// TODO: simulation in progress view
@@ -64,6 +66,7 @@ bool OpenFileView::Render(RenderWindow& window, Vector2f mouse, bool clicked) {
 
 		return false;
 	}
+	UnlockObject();
 	return true;
 }
 

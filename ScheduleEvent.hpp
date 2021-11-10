@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SchedulerExports.h"
+
 enum class ScheduleEventType {
 	ExecutionEvent,
 	CommentEvent,
@@ -8,7 +10,7 @@ enum class ScheduleEventType {
 	FinishEvent,
 };
 
-class ScheduleEvent
+class DLLCLASSMODE ScheduleEvent
 {
 public:
 	ScheduleEvent(double start, double duration = 0) noexcept {

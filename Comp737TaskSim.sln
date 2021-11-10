@@ -5,6 +5,11 @@ VisualStudioVersion = 16.0.31729.503
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Comp737TaskSim", "Comp737TaskSim.vcxproj", "{CD00959C-5632-4183-832F-801F1E3E421F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NPEDF", "NPEDF\NPEDF.vcxproj", "{C031D851-D46E-4F5B-9B91-6FACDFDA3A7F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CD00959C-5632-4183-832F-801F1E3E421F} = {CD00959C-5632-4183-832F-801F1E3E421F}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +26,14 @@ Global
 		{CD00959C-5632-4183-832F-801F1E3E421F}.Release|x64.Build.0 = Release|x64
 		{CD00959C-5632-4183-832F-801F1E3E421F}.Release|x86.ActiveCfg = Release|Win32
 		{CD00959C-5632-4183-832F-801F1E3E421F}.Release|x86.Build.0 = Release|Win32
+		{C031D851-D46E-4F5B-9B91-6FACDFDA3A7F}.Debug|x64.ActiveCfg = Debug|x64
+		{C031D851-D46E-4F5B-9B91-6FACDFDA3A7F}.Debug|x64.Build.0 = Debug|x64
+		{C031D851-D46E-4F5B-9B91-6FACDFDA3A7F}.Debug|x86.ActiveCfg = Debug|Win32
+		{C031D851-D46E-4F5B-9B91-6FACDFDA3A7F}.Debug|x86.Build.0 = Debug|Win32
+		{C031D851-D46E-4F5B-9B91-6FACDFDA3A7F}.Release|x64.ActiveCfg = Release|x64
+		{C031D851-D46E-4F5B-9B91-6FACDFDA3A7F}.Release|x64.Build.0 = Release|x64
+		{C031D851-D46E-4F5B-9B91-6FACDFDA3A7F}.Release|x86.ActiveCfg = Release|Win32
+		{C031D851-D46E-4F5B-9B91-6FACDFDA3A7F}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

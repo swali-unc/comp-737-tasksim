@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SchedulerExports.h"
 #include "Job.hpp"
 #include "ScheduleEvent.hpp"
 #include "ResourceAccessParameter.h"
@@ -9,7 +10,7 @@
 
 class Job;
 
-class JobExecution : public ScheduleEvent
+class DLLCLASSMODE JobExecution : public ScheduleEvent
 {
 public:
 	JobExecution(Job& job, double start, double duration) noexcept;
