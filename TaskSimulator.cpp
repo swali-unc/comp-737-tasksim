@@ -20,14 +20,15 @@ bool TaskSimulator::Simulate() {
 
 	auto procCount = SimulationState::Instance()->getProblem()->getProcessorCount();
 	auto nextEvent = upcomingEventQueue.top();
-	auto nextEventTime = nextEvent ? nextEvent->getStart() : SimulationState::Instance()->getProblem()->getTimelineInterval();
+	auto nextEventTime = nextEvent ? nextEvent->getStart() : SimulationState::Instance()->getProblem()->getScheduleLength();
 	//printf("Initial next event time %f\n", nextEventTime);
 	//bool nextEventIsCompletion = false, nextEventIsResourceAccess = false, nextEventIsResourceRelease = false;
 	enum _nextEventType {
 		UNKNOWN, COMPLETION, RESOURCEACCESS, RESOURCERELEASE, TIMEFINISH
 	};
 	_nextEventType nextEventType = UNKNOWN;
-	string resource;
+	//string resource;
+	vector<string> eventResources;
 	//printf("Next event time: %f\n", nextEventTime);
 
 	auto nextEventProc = 0u;
@@ -35,37 +36,40 @@ bool TaskSimulator::Simulate() {
 		if(currentJobOnProc[i]) {
 			auto remainingCost = currentJobOnProc[i]->getRemainingCost();
 
-			// Will we hit a resource access/release?
-			string resourceName, resourceReleaseName;
-			auto timeTillResource = currentJobOnProc[i]->getNextResourceAccess(resourceName);
-			auto timeTillResourceRelease = currentJobOnProc[i]->getNextResourceRelease(resourceReleaseName);
-
-			if(timeTillResourceRelease > 0 && time + timeTillResourceRelease < nextEventTime) {
-				nextEventType = RESOURCERELEASE;
-				resource = resourceName;
-				nextEventTime = time + timeTillResourceRelease;
+			// slice finish is the last thing to report
+			if(currentJobStart[i] + currentDuration[i] <= nextEventTime) {
+				nextEventType = TIMEFINISH;
+				nextEventTime = currentJobStart[i] + currentDuration[i];
 				nextEventProc = i;
 			}
 
-			if(timeTillResource > 0 && time + timeTillResource < nextEventTime) {
-				nextEventTime = time + timeTillResource;
-				nextEventType = RESOURCEACCESS;
-				resource = resourceName;
-				nextEventProc = i;
-			}
-
-			if(currentJobStart[i] + remainingCost < nextEventTime) {
-				// Our current job will finish executing before the next event
-				// so the real next event is a job completion
+			// completion is the last thing to report
+			if(currentJobStart[i] + remainingCost <= nextEventTime) {
 				nextEventType = COMPLETION;
 				nextEventTime = currentJobStart[i] + remainingCost;
 				nextEventProc = i;
 			}
 
-			if(currentJobStart[i] + currentDuration[i] < nextEventTime) {
-				nextEventType = TIMEFINISH;
-				nextEventTime = currentJobStart[i] + currentDuration[i];
-				nextEventProc = i;
+			auto currentTimeDelta = time - currentJobStart[i];
+			double resourceDelta;
+			vector<string> resources;
+
+			if(currentJobOnProc[i]->getTimeOfNextResource(resourceDelta, resources, currentTimeDelta)) {
+				if(time + resourceDelta <= nextEventTime) {
+					eventResources = resources;
+					nextEventTime = time + resourceDelta;
+					nextEventType = RESOURCEACCESS;
+					nextEventProc = i;
+				}
+			}
+
+			if(currentJobOnProc[i]->getTimeOfNextResourceRelease(resourceDelta, resources, currentTimeDelta)) {
+				if(time + resourceDelta <= nextEventTime) {
+					eventResources = resources;
+					nextEventTime = time + resourceDelta;
+					nextEventType = RESOURCERELEASE;
+					nextEventProc = i;
+				}
 			}
 
 			//printf("Set next time: %f (%d) - %u has %f+%f (%s)\n", nextEventTime, nextEventType, i,
@@ -119,11 +123,15 @@ bool TaskSimulator::Simulate() {
 			return true;
 		}
 		else if(nextEventType == RESOURCEACCESS) {
-			sched->onResourceRequest(time, job, resource, nextEventProc);
+			for(auto& i : eventResources)
+				sched->onResourceRequest(time, job, i, nextEventProc);
+			//sched->onResourceRequest(time, job, resource, nextEventProc);
 			return true;
 		}
 		else if(nextEventType == RESOURCERELEASE) {
-			sched->onResourceFinish(time, job, resource, nextEventProc);
+			for(auto& i : eventResources)
+				sched->onResourceFinish(time, job, i, nextEventProc);
+			//sched->onResourceFinish(time, job, resource, nextEventProc);
 			return true;
 		}
 		else if(nextEventType == TIMEFINISH) {
@@ -143,6 +151,10 @@ bool TaskSimulator::Simulate() {
 
 		if(time >= SimulationState::Instance()->getProblem()->getScheduleLength()) {
 			// We're at the end, process all jobs and finish up
+			for(auto i = 0u; i < procCount; ++i) {
+				if(currentJobOnProc[i])
+					StopExecutingCurrentJob(i);
+			}
 		}
 		return true;
 	}
@@ -184,6 +196,18 @@ bool TaskSimulator::Simulate() {
 	}
 
 	logScheduleError(stringprintf("Error, unknown event type: %d", eventType), 0);
+	return false;
+}
+
+bool TaskSimulator::NeedsSimulation() {
+	if(time < SimulationState::Instance()->getProblem()->getScheduleLength())
+		return true;
+
+	auto procCount = SimulationState::Instance()->getProblem()->getProcessorCount();
+	for(auto i = 0u; i < procCount; ++i) {
+		if(currentJobOnProc[i]) return true;
+	}
+
 	return false;
 }
 
@@ -276,7 +300,7 @@ bool TaskSimulator::Schedule(Job* job, double duration, unsigned int proc) {
 				job->setAssignedProcessor(proc);
 		}
 	}*/
-	//printf("%s assigned to proc %u for %f @ %f\n", job->createLabel().c_str(), proc, duration, time);
+	printf("%s assigned to proc %u for %f @ %f\n", job->createLabel().c_str(), proc, duration, time);
 	//schedule.push_back(currentJob);
 	return true;
 }
@@ -315,6 +339,22 @@ void* TaskSimulator::registerTimer(double delta, void* callbackData) {
 	auto newTimer = new pair<double, void*>(time + delta, callbackData);
 	timers.push_back(newTimer);
 	return (void*)newTimer;
+}
+
+bool TaskSimulator::isJobUsingResource(Job* job, string resource) {
+	// Is this job currently being executed?
+	auto currentProc = job->getLatestAssignedProcessor();
+	if(currentProc < 0) return false;
+	if(currentJobOnProc[currentProc] == job) {
+		// We're being executed, so need to figure out where
+		// we are in the execution to determine the resource
+		// usage
+		return job->isResourceAccessed(resource, time - currentJobStart[currentProc]);
+	}
+
+	// This job is not being executed, so determine
+	// if it is using said resource
+	return job->isResourceAccessed(resource);
 }
 
 void TaskSimulator::logScheduleError(string errorText, unsigned int proc) {

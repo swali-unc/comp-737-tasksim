@@ -3,7 +3,7 @@
 using std::string;
 using std::vector;
 
-double Job::getNextResourceAccess(string& resourceName) const {
+/*double Job::getNextResourceAccess(string& resourceName) const {
 	double minAccess = -1;
 
 	for(auto& i : resourceAccess) {
@@ -31,17 +31,41 @@ double Job::getNextResourceRelease(string& resourceName) const {
 	}
 
 	return minAccess - currentTime;
-}
+}*/
 
 JobExecution* Job::executeJob(double executionTime, double execStart) {
-	JobExecution* jExec = new JobExecution(*this, execStart, executionTime);
+	JobExecution* jExec = new JobExecution(*this, execStart, executionTime, currentTime);
 
 	for (auto& i : resourceAccess) {
 		// Did not we already pass this resource?
-		if (currentTime <= i.start + i.duration) {
+		if (currentTime < i.start + i.duration) {
 			// Is our current time in the interval, or will our execution put us in the interval?
 			if (currentTime >= i.start || currentTime + executionTime >= i.start) {
-				// If our execution is also going to pull us out of this resource, then
+				//printf("%s Times: %f + %f [%f,%f)\n", createLabel().c_str(), currentTime, executionTime, i.start, i.start + i.duration);
+
+				// Three interchangeable scenarios
+				// Scenario 1: I am already in a resource, and now that I am executing, I need only a resource slice
+				// Scenario 2: I am not in a resource, so if the resource is in in my execution, put it in
+				// Scenario 3: I am leaving a resource
+				
+				auto resourceStartPoint = i.start;
+				if(currentTime <= i.start) {
+					// resource hasn't started yet
+					auto timeInResource = executionTime - (i.start - currentTime);
+					auto resourceDuration = timeInResource > i.duration ? i.duration : timeInResource;
+					jExec->addResourceAccess(i.start - currentTime, resourceDuration, i.resourceName);
+					if(resourceDuration < i.duration)
+						accessResource(i.resourceName);
+				}
+				else {
+					// We are already in the resource
+					auto resourceAmountUsed = currentTime - i.start;
+					auto resourceDuration = i.duration - resourceAmountUsed;
+					jExec->addResourceAccess(0, resourceDuration, i.resourceName);
+				}
+
+
+				/* // If our execution is also going to pull us out of this resource, then
 				// we don't really need to go out of our way to add it
 				if (currentTime + executionTime < i.start + i.duration) {
 					// Access the resource for a partial amount of time
@@ -52,7 +76,7 @@ JobExecution* Job::executeJob(double executionTime, double execStart) {
 				else {
 					// Access the resource for the full duration
 					jExec->addResourceAccess(i.start - currentTime, i.duration, i.resourceName);
-				}
+				} */
 			}
 		}
 
@@ -78,11 +102,11 @@ void Job::releaseResource(string resourceName) {
 	heldResources.erase(i);
 }
 
-bool Job::getTimeOfNextResource(double& resourceStartDelta, std::vector<std::string>& resourceNames) const {
+bool Job::getTimeOfNextResource(double& resourceStartDelta, std::vector<std::string>& resourceNames, double delta) const {
 	double startTime = -1;
 
 	for (auto& i : resourceAccess) {
-		if (currentTime < i.start) {
+		if (currentTime + delta < i.start) {
 			// Find something earlier than our earliest?
 			if (i.start < startTime || startTime == -1) {
 				// Clear our list because this resource is earlier
@@ -97,16 +121,16 @@ bool Job::getTimeOfNextResource(double& resourceStartDelta, std::vector<std::str
 
 	if (startTime == -1)
 		return false;
-	resourceStartDelta = startTime - currentTime;
+	resourceStartDelta = startTime - (currentTime+delta);
 	return true;
 }
 
-bool Job::getTimeOfNextResourceRelease(double& resourceReleaseDelta, vector<string>& resourceNames) const {
+bool Job::getTimeOfNextResourceRelease(double& resourceReleaseDelta, vector<string>& resourceNames, double delta) const {
 	double releaseTime = -1;
 
 	for (auto& i : resourceAccess) {
 		// Are we currently in this resource segment?
-		if (currentTime >= i.start && currentTime < i.start + i.duration) {
+		if (currentTime + delta >= i.start && currentTime + delta < i.start + i.duration) {
 			if (i.start + i.duration < releaseTime || releaseTime == -1) {
 				resourceNames.clear();
 				resourceNames.push_back(i.resourceName);
@@ -119,8 +143,27 @@ bool Job::getTimeOfNextResourceRelease(double& resourceReleaseDelta, vector<stri
 
 	if (releaseTime == -1)
 		return false;
-	resourceReleaseDelta = releaseTime - currentTime;
+	resourceReleaseDelta = releaseTime - (currentTime + delta);
 	return true;
+}
+
+bool Job::isResourceAccessed(string name, double delta) const {
+	// Loop through our resources and see if the specified time period
+	// is within a resource access
+	auto timeCheck = currentTime + delta;
+	for(auto& i : resourceAccess) {
+		if(name == i.resourceName) {
+			/*printf("(%s=%s) %f <= %f <= %f- %s\n",
+				name.c_str(), i.resourceName.c_str(),
+				i.start, timeCheck, i.start + i.duration,
+				i.start <= timeCheck && timeCheck <= i.start + i.duration ? "true" : "false"
+			);*/
+			if(i.start < timeCheck && timeCheck < i.start + i.duration)
+				return true;
+		}
+	}
+
+	return false;
 }
 
 std::string Job::createLabel() const {

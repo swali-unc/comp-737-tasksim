@@ -23,6 +23,7 @@ public:
 	bool IsIdle(unsigned int proc) const { return currentJobOnProc[proc] == nullptr; }
 	Job* GetJobOnProcessor(unsigned int proc) const { return currentJobOnProc[proc]; }
 
+	bool NeedsSimulation();
 	bool Simulate();
 	std::vector<Job*> getCurrentJobs() const { return currentJobs; }
 	std::vector<ScheduleEvent*> getSchedule(unsigned int proc) const { return schedules[proc]; }
@@ -31,7 +32,9 @@ public:
 	void logScheduleError(std::string errorText, unsigned int proc);
 
 	void* registerTimer(double delta, void* callbackData);
+
 	double getRemainingCostOfJob(Job* job);
+	bool isJobUsingResource(Job* job, std::string resource);
 private:
 	std::vector<std::pair<double, void*>*> timers;
 

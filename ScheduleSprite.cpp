@@ -90,6 +90,8 @@ RenderTexture* ScheduleSprite::createRenderTexture() {
 		for (auto& r : resources) {
 			double offsetIntoSlice = r.start;
 			double duration = r.duration;
+			if(duration <= 0)
+				continue;
 			FloatRect spriteRect = jSprite->getGlobalBounds();
 			spriteRect.left += (float)(offsetIntoSlice * widthPerCost);
 			spriteRect.width = (float)(duration * widthPerCost);

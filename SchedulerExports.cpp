@@ -3,8 +3,10 @@
 #include "SimulationState.hpp"
 
 #include <vector>
+#include <string>
 
 using std::vector;
+using std::string;
 
 void RecordError(const char* text);
 
@@ -102,4 +104,13 @@ CEXPORT void* RegisterTimer(double time, void* callbackPointer) {
 
 CEXPORT double GetTime() {
 	return SimulationState::Instance()->getSimulator()->getTime();
+}
+
+CEXPORT bool IsJobUsingResource(void* job, const char* name) {
+	return SimulationState::Instance()->getSimulator()->isJobUsingResource((Job*)job, name);
+}
+
+CEXPORT void GetJobLabel(void* job, char* buf, size_t bufLen) {
+	auto str = ((Job*)job)->createLabel();
+	strcpy_s(buf, bufLen, str.c_str());
 }

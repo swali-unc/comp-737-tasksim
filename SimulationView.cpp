@@ -44,7 +44,7 @@ void SimulationView::timeBackward() {
 	auto maxTime = SimulationState::Instance()->getProblem()->getScheduleLength();
 	auto oneChunk = interval * INCREMENTS_TO_SHOW;
 	auto timeDelta = oneChunk / 2.f;
-	auto nextStart = timeStart - timeDelta;
+	/*auto nextStart = timeStart - timeDelta;
 	auto nextEnd = timeEnd - timeDelta;
 
 	if(nextStart < 0)
@@ -54,16 +54,18 @@ void SimulationView::timeBackward() {
 
 	if(timeStart == nextStart)
 		return;
+
 	timeStart = nextStart;
 	timeEnd = nextEnd;
-	CreateRenders();
+	CreateRenders();*/
+	ErrorButtonCallback(timeStart - timeDelta);
 }
 
 void SimulationView::timeForward() {
 	auto interval = SimulationState::Instance()->getProblem()->getTimelineInterval();
 	auto oneChunk = interval * INCREMENTS_TO_SHOW;
 	auto timeDelta = oneChunk / 2.f;
-	auto nextStart = timeStart + timeDelta;
+	/*auto nextStart = timeStart + timeDelta;
 	auto nextEnd = timeEnd + timeDelta;
 	auto maxTime = SimulationState::Instance()->getProblem()->getScheduleLength();
 
@@ -74,6 +76,27 @@ void SimulationView::timeForward() {
 
 	if(timeStart == nextStart)
 		return;
+	timeStart = nextStart;
+	timeEnd = nextEnd;
+	CreateRenders();*/
+	ErrorButtonCallback(timeStart + timeDelta);
+}
+
+void SimulationView::ErrorButtonCallback(double time) {
+	auto interval = SimulationState::Instance()->getProblem()->getTimelineInterval();
+	auto duration = SimulationState::Instance()->getProblem()->getScheduleLength();
+	auto oneChunk = interval * INCREMENTS_TO_SHOW;
+	auto timeDelta = oneChunk / 2.f;
+	auto nextStart = time - timeDelta;
+	auto nextEnd = time + timeDelta;
+	if(nextStart < 0)
+		nextStart = 0;
+	if(nextEnd > duration)
+		nextEnd = duration;
+
+	if(timeStart == nextStart)
+		return;
+
 	timeStart = nextStart;
 	timeEnd = nextEnd;
 	CreateRenders();
@@ -165,26 +188,6 @@ void SimulationView::createTimeSprite() {
 	), TIME_LABEL_COLOR, TIME_LABEL_SIZE);
 
 	currentTimeSprite->getCachedSprite()->setPosition(25.f, 30.f + TIME_BUTTON_HEIGHT + 5.f);
-}
-
-void SimulationView::ErrorButtonCallback(double time) {
-	auto interval = SimulationState::Instance()->getProblem()->getTimelineInterval();
-	auto duration = SimulationState::Instance()->getProblem()->getScheduleLength();
-	auto oneChunk = interval * INCREMENTS_TO_SHOW;
-	auto timeDelta = oneChunk / 2.f;
-	auto nextStart = time - timeDelta;
-	auto nextEnd = time + timeDelta;
-	if(nextStart < 0)
-		nextStart = 0;
-	if(nextEnd > duration)
-		nextEnd = duration;
-
-	if(timeStart == nextStart)
-		return;
-
-	timeStart = nextStart;
-	timeEnd = nextEnd;
-	CreateRenders();
 }
 
 SimulationView::SimulationView() : ButtonView() {

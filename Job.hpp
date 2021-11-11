@@ -30,8 +30,9 @@ public:
 	JobExecution* executeJob(double executionTime, double execStart = 0);
 	inline void accessResource(std::string resourceName) { heldResources[resourceName] = true; }
 	void releaseResource(std::string resourceName);
-	bool getTimeOfNextResource(double& resourceStartDelta, std::vector<std::string>& resourceNames) const;
-	bool getTimeOfNextResourceRelease(double& resourceReleaseDelta, std::vector<std::string>& resourceNames) const;
+	bool getTimeOfNextResource(double& resourceStartDelta, std::vector<std::string>& resourceNames, double delta = 0) const;
+	bool getTimeOfNextResourceRelease(double& resourceReleaseDelta, std::vector<std::string>& resourceNames, double delta = 0) const;
+	bool isResourceAccessed(std::string resourceName, double delta = 0) const;
 	std::string createLabel() const;
 
 	inline double getReleaseTime() const { return release; }
@@ -49,8 +50,8 @@ public:
 	inline int getLatestAssignedProcessor() const { return task ? task->getLatestAssignedProcessor() : lastProcessor; }
 	inline void setAssignedProcessor(unsigned int proc) { lastProcessor = (int)proc; if(task) task->setLatestAssignedProcessor(proc); }
 
-	double getNextResourceAccess(std::string& resourceName) const;
-	double getNextResourceRelease(std::string& resourceName) const;
+	//double getNextResourceAccess(std::string& resourceName) const;
+	//double getNextResourceRelease(std::string& resourceName) const;
 private:
 	double release;
 	double adeadline;

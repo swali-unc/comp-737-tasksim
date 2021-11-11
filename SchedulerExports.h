@@ -34,3 +34,6 @@ DLLMODE double GetJobCost(void* job);
 DLLMODE double GetRemainingCost(void* job);
 DLLMODE double GetAbsoluteDeadline(void* job);
 DLLMODE int GetLatestAssignedProcessor(void* job);
+
+DLLMODE bool IsJobUsingResource(void* job, const char* resourceName);
+DLLMODE void GetJobLabel(void* job, char* buf, size_t bufLen);

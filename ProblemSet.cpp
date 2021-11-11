@@ -176,6 +176,25 @@ void ProblemSet::initializeAperiodics(XMLElement* jobs) {
 
 		// Create the task
 		aperiodicJobs[job_index] = new Job(jobRelease, jobAbsDeadline, jobDeadline, jobCost, job_index);
+
+		// Do we have any resources?
+		auto resources = child->FirstChildElement("Resources");
+		if(resources) {
+			for(auto resource = resources->FirstChildElement("Resource"); resource; resource = resource->NextSiblingElement("Resource")) {
+				// Resource name
+				auto name = resource->FirstChildElement("Name");
+				if(!name) throw runtime_error("ProblemSet- resource missing name");
+				// Default start offset is 0
+				auto resourceStart = resource->FirstChildElement("Start");
+				double startOffset = !resourceStart ? 0 : resourceStart->DoubleText();
+				// Cost
+				auto resourceCost = resource->FirstChildElement("Cost");
+				if(!resourceCost) throw runtime_error("ProblemSet- resource missing cost");
+
+				aperiodicJobs[job_index]->addResourceAccess(startOffset, resourceCost->DoubleText(), name->GetText());
+			}
+		}
+
 		++job_index;
 	}
 }
