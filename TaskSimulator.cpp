@@ -19,8 +19,18 @@ bool TaskSimulator::Simulate() {
 	}
 
 	auto procCount = SimulationState::Instance()->getProblem()->getProcessorCount();
-	auto nextEvent = upcomingEventQueue.top();
-	auto nextEventTime = nextEvent ? nextEvent->getStart() : SimulationState::Instance()->getProblem()->getScheduleLength();
+	//auto nextEvent = upcomingEventQueue.top();
+	//auto nextEventTime = nextEvent ? nextEvent->getStart() : SimulationState::Instance()->getProblem()->getScheduleLength();
+	ScheduleEvent* nextEvent;
+	double nextEventTime;
+	if (!upcomingEventQueue.size()) {
+		nextEvent = nullptr;
+		nextEventTime = SimulationState::Instance()->getProblem()->getScheduleLength();
+	}
+	else {
+		nextEvent = upcomingEventQueue.top();
+		nextEventTime = nextEvent->getStart();
+	}
 	//printf("Initial next event time %f\n", nextEventTime);
 	//bool nextEventIsCompletion = false, nextEventIsResourceAccess = false, nextEventIsResourceRelease = false;
 	enum _nextEventType {
@@ -187,8 +197,10 @@ bool TaskSimulator::Simulate() {
 
 		// Did we miss a deadline?
 		if (deadlineEvent->getJob()->getRemainingCost() > 0) {
-			logScheduleError(stringprintf("Deadline missed for %s (%f)",
-				deadlineEvent->getJob()->createLabel().c_str(), time), proc);
+			logScheduleError(stringprintf("Deadline missed for %s (%s remaining)",
+				deadlineEvent->getJob()->createLabel().c_str(), to_string_trim(
+					deadlineEvent->getJob()->getRemainingCost()
+				).c_str() ), proc);
 		}
 
 		sched->onJobDeadline(time, deadlineEvent->getJob());

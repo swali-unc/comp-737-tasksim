@@ -3,6 +3,7 @@
 #include <string>
 #include <stdexcept>
 #include "FontFactory.hpp"
+#include "Utility.hpp"
 
 using namespace sf;
 
@@ -23,7 +24,7 @@ RenderTexture* TimelineSprite::createRenderTexture() {
 		throw std::runtime_error("TimelineSprite- Could not allocate RenderTexture");
 
 	// Our width needs to account for the fact that the font starts a little before our texture
-	double width = (end - start) * spacing + FONT_SIZE;
+	double width = ((end - start) / interval) * spacing + FONT_SIZE;
 	// We also need to give vertical area for the font
 	double height = HORIZONTAL_LINE_THICKNESS + (double)dashlen + FONT_SIZE + 3;
 
@@ -49,11 +50,11 @@ RenderTexture* TimelineSprite::createRenderTexture() {
 
 	// make every tick
 	for (double i = start; i <= end; i += interval) {
-		vertical_line.setPosition((float)(i - start) * spacing, HORIZONTAL_LINE_THICKNESS);
+		vertical_line.setPosition((float)((i - start)/interval) * spacing, HORIZONTAL_LINE_THICKNESS);
 		renderTexture->draw(vertical_line);
 
-		number.setString(std::to_string((int)i));
-		number.setPosition((float)(i - start) * spacing, HORIZONTAL_LINE_THICKNESS + dashlen + 1);
+		number.setString(to_string_trim(i));
+		number.setPosition((float)((i - start)/interval) * spacing, HORIZONTAL_LINE_THICKNESS + dashlen + 1);
 		if( i > start )
 			number.setOrigin(Vector2f(number.getGlobalBounds().width / 2,0));
 		renderTexture->draw(number);

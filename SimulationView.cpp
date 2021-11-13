@@ -40,10 +40,9 @@ bool SimulationView::Render(RenderWindow& window, Vector2f mouse, bool clicked) 
 }
 
 void SimulationView::timeBackward() {
-	auto interval = SimulationState::Instance()->getProblem()->getTimelineInterval();
-	auto maxTime = SimulationState::Instance()->getProblem()->getScheduleLength();
-	auto oneChunk = interval * INCREMENTS_TO_SHOW;
-	auto timeDelta = oneChunk / 2.f;
+	//auto interval = SimulationState::Instance()->getProblem()->getTimelineInterval();
+	//auto oneChunk = interval * INCREMENTS_TO_SHOW;
+	//auto timeDelta = oneChunk / 2.f;
 	/*auto nextStart = timeStart - timeDelta;
 	auto nextEnd = timeEnd - timeDelta;
 
@@ -58,13 +57,13 @@ void SimulationView::timeBackward() {
 	timeStart = nextStart;
 	timeEnd = nextEnd;
 	CreateRenders();*/
-	ErrorButtonCallback(timeStart - timeDelta);
+	ErrorButtonCallback(timeStart);
 }
 
 void SimulationView::timeForward() {
-	auto interval = SimulationState::Instance()->getProblem()->getTimelineInterval();
-	auto oneChunk = interval * INCREMENTS_TO_SHOW;
-	auto timeDelta = oneChunk / 2.f;
+	//auto interval = SimulationState::Instance()->getProblem()->getTimelineInterval();
+	//auto oneChunk = interval * INCREMENTS_TO_SHOW;
+	//auto timeDelta = oneChunk / 2.f;
 	/*auto nextStart = timeStart + timeDelta;
 	auto nextEnd = timeEnd + timeDelta;
 	auto maxTime = SimulationState::Instance()->getProblem()->getScheduleLength();
@@ -79,7 +78,7 @@ void SimulationView::timeForward() {
 	timeStart = nextStart;
 	timeEnd = nextEnd;
 	CreateRenders();*/
-	ErrorButtonCallback(timeStart + timeDelta);
+	ErrorButtonCallback(timeEnd);
 }
 
 void SimulationView::ErrorButtonCallback(double time) {
@@ -88,10 +87,12 @@ void SimulationView::ErrorButtonCallback(double time) {
 	auto oneChunk = interval * INCREMENTS_TO_SHOW;
 	auto timeDelta = oneChunk / 2.f;
 	auto nextStart = time - timeDelta;
-	auto nextEnd = time + timeDelta;
-	if(nextStart < 0)
+	if (nextStart < 0) {
+		time = timeDelta;
 		nextStart = 0;
-	if(nextEnd > duration)
+	}
+	auto nextEnd = time + timeDelta;
+	if(nextEnd > duration && nextEnd > oneChunk)
 		nextEnd = duration;
 
 	if(timeStart == nextStart)
@@ -137,7 +138,7 @@ void SimulationView::createTimeline(unsigned int proc) {
 			registerButton(btn);
 		}
 
-		if(i->getStart() > timeEnd || i->getStart() < timeStart)
+		if(i->getStart() > timeEnd || i->getStart() + i->getDuration() < timeStart)
 			continue;
 
 		switch(i->getType()) {
