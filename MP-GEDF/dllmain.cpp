@@ -36,9 +36,6 @@ CEXPORT void OnJobFinish(double time, void* job, unsigned int proc) {
 	void* highestPriorityJob = nullptr;
 	for (auto i = 0u; i < numJobs; ++i) {
 		auto latestProc = GetLatestAssignedProcessor(currentJobs[i]);
-		/*if (!highestPriorityJob || (
-			( latestProc < 0 || GetJobOnProcessor(latestProc) != currentJobs[i] )
-			&& GetAbsoluteDeadline(currentJobs[i]) < GetAbsoluteDeadline(highestPriorityJob)))*/
 		if ((!highestPriorityJob || GetAbsoluteDeadline(currentJobs[i]) < GetAbsoluteDeadline(highestPriorityJob))
 			&& (latestProc < 0 || GetJobOnProcessor(latestProc) != currentJobs[i]))
 			highestPriorityJob = currentJobs[i];

@@ -19,8 +19,7 @@ bool TaskSimulator::Simulate() {
 	}
 
 	auto procCount = SimulationState::Instance()->getProblem()->getProcessorCount();
-	//auto nextEvent = upcomingEventQueue.top();
-	//auto nextEventTime = nextEvent ? nextEvent->getStart() : SimulationState::Instance()->getProblem()->getScheduleLength();
+
 	ScheduleEvent* nextEvent;
 	double nextEventTime;
 	if (!upcomingEventQueue.size()) {
@@ -31,15 +30,12 @@ bool TaskSimulator::Simulate() {
 		nextEvent = upcomingEventQueue.top();
 		nextEventTime = nextEvent->getStart();
 	}
-	//printf("Initial next event time %f\n", nextEventTime);
-	//bool nextEventIsCompletion = false, nextEventIsResourceAccess = false, nextEventIsResourceRelease = false;
+
 	enum _nextEventType {
 		UNKNOWN, COMPLETION, RESOURCEACCESS, RESOURCERELEASE, TIMEFINISH
 	};
 	_nextEventType nextEventType = UNKNOWN;
-	//string resource;
 	vector<string> eventResources;
-	//printf("Next event time: %f\n", nextEventTime);
 
 	auto nextEventProc = 0u;
 	for(auto i = 0u; i < procCount; ++i) {
@@ -82,13 +78,9 @@ bool TaskSimulator::Simulate() {
 				}
 			}
 
-			//printf("Set next time: %f (%d) - %u has %f+%f (%s)\n", nextEventTime, nextEventType, i,
-			//	currentJobStart[i], remainingCost,
-			//	currentJobOnProc[i]->createLabel().c_str());
 		}
 	}
 
-	//printf("%f: next event type %d @ %f on proc %u\n", time, nextEventType, nextEventTime, nextEventProc);
 
 	// Do we have a timer that will hit before any of the current events?
 	pair<double, void*>* earliestTimer = nullptr;
@@ -110,12 +102,6 @@ bool TaskSimulator::Simulate() {
 		return true;
 	}
 
-	// Execute on all jobs on all processors by that time
-	/*for(auto i = 0u; i < procCount; ++i) {
-		if(currentJobOnProc[i]) {
-		}
-	}*/
-
 	// We have a job event and not a regular event
 	if(nextEventType != UNKNOWN) {
 		auto job = currentJobOnProc[nextEventProc];
@@ -127,21 +113,19 @@ bool TaskSimulator::Simulate() {
 			schedules[nextEventProc].push_back(new JobFinishEvent(time, *job));
 			currentJobs.erase(std::find(currentJobs.begin(), currentJobs.end(), job));
 			currentJobOnProc[nextEventProc] = nullptr;
-			//printf("[%f] Cleared job %s\n", time, job->createLabel().c_str());
 			sched->onJobFinish(time, job, nextEventProc);
 			//delete job;
+			jobGarbage.push_back(job);
 			return true;
 		}
 		else if(nextEventType == RESOURCEACCESS) {
 			for(auto& i : eventResources)
 				sched->onResourceRequest(time, job, i, nextEventProc);
-			//sched->onResourceRequest(time, job, resource, nextEventProc);
 			return true;
 		}
 		else if(nextEventType == RESOURCERELEASE) {
 			for(auto& i : eventResources)
 				sched->onResourceFinish(time, job, i, nextEventProc);
-			//sched->onResourceFinish(time, job, resource, nextEventProc);
 			return true;
 		}
 		else if(nextEventType == TIMEFINISH) {
@@ -266,9 +250,6 @@ bool TaskSimulator::Schedule(Job* job, double duration, unsigned int proc) {
 	if (currentJobOnProc[proc]) {
 		if (currentJobOnProc[proc] == job) {
 			// If it's the same job, then no need to do anything
-			//double currentDuration = currentJob->getDuration();
-			//currentJob->setDuration((currentDuration - (time - currentJobStart)) + duration);
-			//if(currentJobStart[proc] + currentDuration[proc] > time + duration)
 			currentDuration[proc] = (time - currentJobStart[proc]) + duration;
 			return true;
 		}
@@ -300,20 +281,12 @@ bool TaskSimulator::Schedule(Job* job, double duration, unsigned int proc) {
 	}
 
 	// schedule our new job
-	//currentJob = new JobExecution(*job, time, duration);
 	currentJobOnProc[proc] = job;
 	currentJobStart[proc] = time;
 	currentDuration[proc] = duration;
 	job->setAssignedProcessor(proc);
-	// Also need to find all other jobs with the same task
-	/*if(job->getRelatedTask()) {
-		for(auto& i : getCurrentJobs()) {
-			if(job->getRelatedTask() == i->getRelatedTask())
-				job->setAssignedProcessor(proc);
-		}
-	}*/
-	printf("%s assigned to proc %u for %f @ %f\n", job->createLabel().c_str(), proc, duration, time);
-	//schedule.push_back(currentJob);
+
+	// printf("%s assigned to proc %u for %f @ %f\n", job->createLabel().c_str(), proc, duration, time);
 	return true;
 }
 
@@ -323,7 +296,6 @@ bool TaskSimulator::StopExecutingCurrentJob(unsigned int proc) {
 		return false;
 	}
 
-	//currentJob->setDuration(time - currentJobStart);
 	if(currentJobStart[proc] < time) {
 		schedules[proc].push_back(currentJobOnProc[proc]->executeJob(time - currentJobStart[proc], currentJobStart[proc]));
 	}
@@ -378,9 +350,7 @@ void TaskSimulator::logScheduleError(string errorText, unsigned int proc) {
 void TaskSimulator::Reset() {
 	time = 0;
 	auto procCount = SimulationState::Instance()->getProblem()->getProcessorCount();
-	//printf("proc count: %u\n", procCount);
 	Destroy();
-	//printf("destroy done\n");
 
 	currentJobOnProc = new Job* [procCount];
 	for(auto i = 0u; i < procCount; ++i)
@@ -412,6 +382,9 @@ void TaskSimulator::Destroy() {
 		delete upcomingJobReleases.top();
 		upcomingJobReleases.pop();
 	}
+
+	for (auto& i : jobGarbage)
+		delete i;
 
 	if(schedules) {
 		for(auto i = 0u; i < procCount; ++i) {

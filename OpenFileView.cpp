@@ -9,7 +9,6 @@
 
 // These three includes will go away in future
 #include "SimulationView.hpp"
-#include "NonPreemptiveEDF.hpp"
 #include "DLLScheduler.hpp"
 #include "TaskSimulator.hpp"
 
@@ -59,9 +58,8 @@ bool OpenFileView::Render(RenderWindow& window, Vector2f mouse, bool clicked) {
 			// Now that the scheduler is loaded
 			ss->setSimulation(new TaskSimulator());
 			ss->getSimulator()->LoadProblem();
-			//while(ss->getSimulator()->getTime() < ss->getProblem()->getScheduleLength()) {
+
 			while( ss->getSimulator()->NeedsSimulation() ) {
-				//printf("Simulating %f\n", ss->getSimulator()->getTime());
 				ss->getSimulator()->Simulate();
 			}
 
@@ -121,8 +119,6 @@ void* OpenFileThread(void* data) {
 	char szFile[_MAX_PATH] = { 0 };
 	ZeroMemory(&ofn,sizeof(ofn));
 	ZeroMemory(szFile, sizeof(szFile));
-
-	//strcpy_s(szFile, defaultDir);
 
 	// Initialize remaining fields of OPENFILENAME structure
 	ofn.lStructSize = sizeof(ofn);

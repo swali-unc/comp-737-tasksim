@@ -67,7 +67,6 @@ namespace DigitalHaze {
 		~ThreadSpinLockedObject();
 
 		inline void LockObject() {
-			//pthread_spin_lock(&cs_mutex);
 			while(lock.test(std::memory_order_acquire)) {
 #if defined(__cpp_lib_atomic_flag_test)
 				while(lock.test(std::memory_order_relaxed));

@@ -49,9 +49,6 @@ public:
 	inline std::vector<ResourceAccessParameter>& getResourceParameters() { return resourceAccess; }
 	inline int getLatestAssignedProcessor() const { return task ? task->getLatestAssignedProcessor() : lastProcessor; }
 	inline void setAssignedProcessor(unsigned int proc) { lastProcessor = (int)proc; if(task) task->setLatestAssignedProcessor(proc); }
-
-	//double getNextResourceAccess(std::string& resourceName) const;
-	//double getNextResourceRelease(std::string& resourceName) const;
 private:
 	double release;
 	double adeadline;

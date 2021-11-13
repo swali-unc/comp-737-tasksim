@@ -32,7 +32,6 @@ CEXPORT void OnJobFinish(double time, void* job, unsigned int proc) {
 	for(size_t i = 0; i < nJobs; ++i) {
 		// First one is priority deadline
 		// Second thing is checking to see if this job is already on a processor
-		//auto latestProc = jList.jobList[i]->getLatestAssignedProcessor();
         auto latestProc = GetLatestAssignedProcessor(jobList[i]);
 		if((!highestPriority || GetAbsoluteDeadline(jobList[i]) < GetAbsoluteDeadline(highestPriority))
 			&& (latestProc < 0 || GetJobOnProcessor(latestProc) != jobList[i] ))

@@ -72,10 +72,6 @@ void MouseoverRegistration::clearAll() {
 }
 
 void MouseoverRegistration::clearView(ViewObject* parent) {
-	/*for(auto& i : circles[parent])
-		i.second.clear();
-	for(auto& i : rects[parent])
-		i.second.clear();*/
 	circles[parent].clear();
 	rects[parent].clear();
 }

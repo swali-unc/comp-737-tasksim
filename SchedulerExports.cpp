@@ -87,8 +87,6 @@ CEXPORT int GetLatestAssignedProcessor(void* job) {
 }
 
 CEXPORT double GetRemainingCost(void* job) {
-	//return ((Job*)job)->getRemainingCost();
-	
 	// The reason we do this is because the simulator only progresses the job pointer
 	//  accumulated runtime when it needs to
 	return SimulationState::Instance()->getSimulator()->getRemainingCostOfJob((Job*)job);

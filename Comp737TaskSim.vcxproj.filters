@@ -90,9 +90,6 @@
     <ClCompile Include="TaskSimulator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NonPreemptiveEDF.cpp">
-      <Filter>Schedulers</Filter>
-    </ClCompile>
     <ClCompile Include="TitleView.cpp">
       <Filter>MVC</Filter>
     </ClCompile>
@@ -187,9 +184,6 @@
     </ClInclude>
     <ClInclude Include="TaskSimulator.hpp">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NonPreemptiveEDF.hpp">
-      <Filter>Schedulers</Filter>
     </ClInclude>
     <ClInclude Include="TitleView.hpp">
       <Filter>MVC</Filter>

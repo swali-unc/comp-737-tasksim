@@ -208,6 +208,4 @@ ScheduleSprite::ScheduleSprite(double start, double end, double interval,
 }
 
 ScheduleSprite::~ScheduleSprite() {
-	//Can't clear our entire view's mouseovers
-	//MouseoverRegistration::Instance()->clearView(parentView);
 }

@@ -40,44 +40,10 @@ bool SimulationView::Render(RenderWindow& window, Vector2f mouse, bool clicked) 
 }
 
 void SimulationView::timeBackward() {
-	//auto interval = SimulationState::Instance()->getProblem()->getTimelineInterval();
-	//auto oneChunk = interval * INCREMENTS_TO_SHOW;
-	//auto timeDelta = oneChunk / 2.f;
-	/*auto nextStart = timeStart - timeDelta;
-	auto nextEnd = timeEnd - timeDelta;
-
-	if(nextStart < 0)
-		nextStart = 0;
-	if(nextEnd > maxTime)
-		nextEnd = maxTime;
-
-	if(timeStart == nextStart)
-		return;
-
-	timeStart = nextStart;
-	timeEnd = nextEnd;
-	CreateRenders();*/
 	ErrorButtonCallback(timeStart);
 }
 
 void SimulationView::timeForward() {
-	//auto interval = SimulationState::Instance()->getProblem()->getTimelineInterval();
-	//auto oneChunk = interval * INCREMENTS_TO_SHOW;
-	//auto timeDelta = oneChunk / 2.f;
-	/*auto nextStart = timeStart + timeDelta;
-	auto nextEnd = timeEnd + timeDelta;
-	auto maxTime = SimulationState::Instance()->getProblem()->getScheduleLength();
-
-	if(nextStart < 0)
-		nextStart = 0;
-	if(nextEnd > maxTime)
-		nextEnd = maxTime;
-
-	if(timeStart == nextStart)
-		return;
-	timeStart = nextStart;
-	timeEnd = nextEnd;
-	CreateRenders();*/
 	ErrorButtonCallback(timeEnd);
 }
 

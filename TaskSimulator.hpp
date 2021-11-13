@@ -48,6 +48,7 @@ private:
 	double* currentJobStart;
 	double* currentDuration;
 
+	std::vector<Job*> jobGarbage;
 	void Destroy();
 };
 

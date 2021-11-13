@@ -3,36 +3,6 @@
 using std::string;
 using std::vector;
 
-/*double Job::getNextResourceAccess(string& resourceName) const {
-	double minAccess = -1;
-
-	for(auto& i : resourceAccess) {
-		if(currentTime < i.start) {
-			if(minAccess < 0 || minAccess < i.start) {
-				minAccess = i.start;
-				resourceName = i.resourceName;
-			}
-		}
-	}
-
-	return minAccess - currentTime;
-}
-
-double Job::getNextResourceRelease(string& resourceName) const {
-	double minAccess = -1;
-
-	for(auto& i : resourceAccess) {
-		if(currentTime < i.start + i.duration) {
-			if(minAccess < 0 || minAccess < i.start + i.duration) {
-				minAccess = i.start + i.duration;
-				resourceName = i.resourceName;
-			}
-		}
-	}
-
-	return minAccess - currentTime;
-}*/
-
 JobExecution* Job::executeJob(double executionTime, double execStart) {
 	JobExecution* jExec = new JobExecution(*this, execStart, executionTime, currentTime);
 
@@ -63,28 +33,14 @@ JobExecution* Job::executeJob(double executionTime, double execStart) {
 					auto resourceDuration = i.duration - resourceAmountUsed;
 					jExec->addResourceAccess(0, resourceDuration, i.resourceName);
 				}
-
-
-				/* // If our execution is also going to pull us out of this resource, then
-				// we don't really need to go out of our way to add it
-				if (currentTime + executionTime < i.start + i.duration) {
-					// Access the resource for a partial amount of time
-					//jExec.addResourceAccess(i.start - currentTime, i.start + i.duration - (currentTime + executionTime), i.resourceName);
-					jExec->addResourceAccess(i.start - currentTime, currentTime + executionTime - i.start, i.resourceName);
-					accessResource(i.resourceName);
-				}
-				else {
-					// Access the resource for the full duration
-					jExec->addResourceAccess(i.start - currentTime, i.duration, i.resourceName);
-				} */
 			}
 		}
 
 		// We need to detect resource intervals ending, so we must
 		// be in an interval first
 		if (currentTime >= i.start // Past the start of the resource
-			&& currentTime <= i.start + i.duration // Before the end of the resource
-			&& currentTime + executionTime > i.start + i.duration // our execution puts us beyond the end of resource
+			&& currentTime < i.start + i.duration // Before the end of the resource
+			&& currentTime + executionTime >= i.start + i.duration // our execution puts us beyond the end of resource
 			)
 			releaseResource(i.resourceName);
 	}
@@ -153,11 +109,6 @@ bool Job::isResourceAccessed(string name, double delta) const {
 	auto timeCheck = currentTime + delta;
 	for(auto& i : resourceAccess) {
 		if(name == i.resourceName) {
-			/*printf("(%s=%s) %f <= %f <= %f- %s\n",
-				name.c_str(), i.resourceName.c_str(),
-				i.start, timeCheck, i.start + i.duration,
-				i.start <= timeCheck && timeCheck <= i.start + i.duration ? "true" : "false"
-			);*/
 			if(i.start < timeCheck && timeCheck < i.start + i.duration)
 				return true;
 		}
