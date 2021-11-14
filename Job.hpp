@@ -47,8 +47,14 @@ public:
 	inline void setColor(sf::Color color) { this->color = color; }
 	inline void addResourceAccess(double time, double duration, std::string name) { resourceAccess.push_back({name,time,duration}); }
 	inline std::vector<ResourceAccessParameter>& getResourceParameters() { return resourceAccess; }
-	inline int getLatestAssignedProcessor() const { return task ? task->getLatestAssignedProcessor() : lastProcessor; }
-	inline void setAssignedProcessor(unsigned int proc) { lastProcessor = (int)proc; if(task) task->setLatestAssignedProcessor(proc); }
+	inline int getLatestAssignedProcessor() {
+		if (lastProcessor < 0 && task)
+				lastProcessor = task->getLatestAssignedProcessor();
+		return lastProcessor;
+		//return lastProcessor < 0 ? (task ? task->getLatestAssignedProcessor() : lastProcessor) : lastProcessor;
+	}
+	inline void setAssignedProcessor(unsigned int proc) { lastProcessor = (int)proc; if (task) task->setLatestAssignedProcessor(proc); }
+	inline int getLatestJobSpecificProcessor() const { return lastProcessor; }
 private:
 	double release;
 	double adeadline;

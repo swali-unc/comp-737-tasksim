@@ -11,6 +11,8 @@ using std::string;
 using std::vector;
 using std::pair;
 
+auto constexpr DOUBLE_ROUND = 0.000001;
+
 bool TaskSimulator::Simulate() {
 	auto sched = SimulationState::Instance()->getScheduler();
 	if (!sched) {
@@ -175,15 +177,25 @@ bool TaskSimulator::Simulate() {
 	if (eventType == ScheduleEventType::DeadlineEvent) {
 		JobDeadlineEvent* deadlineEvent = static_cast<JobDeadlineEvent*>(nextEvent);
 		int latestProc = deadlineEvent->getJob()->getLatestAssignedProcessor();
-		auto proc = latestProc < 0 ? 0u : (unsigned int)latestProc;
+		unsigned int proc;
+		double timeExecuted;
+		if (latestProc < 0) {
+			proc = 0;
+			timeExecuted = 0;
+		}
+		else {
+			proc = (unsigned int)latestProc;
+			timeExecuted = (time - currentJobStart[proc]);
+		}
+		//auto proc = latestProc < 0 ? 0u : (unsigned int)latestProc;
 
 		schedules[proc].push_back(deadlineEvent);
 
 		// Did we miss a deadline?
-		if (deadlineEvent->getJob()->getRemainingCost() > 0) {
+		if (deadlineEvent->getJob()->getRemainingCost() > DOUBLE_ROUND) {
 			logScheduleError(stringprintf("Deadline missed for %s (%s remaining)",
 				deadlineEvent->getJob()->createLabel().c_str(), to_string_trim(
-					deadlineEvent->getJob()->getRemainingCost()
+					deadlineEvent->getJob()->getRemainingCost() - (timeExecuted)
 				).c_str() ), proc);
 		}
 
@@ -286,7 +298,7 @@ bool TaskSimulator::Schedule(Job* job, double duration, unsigned int proc) {
 	currentDuration[proc] = duration;
 	job->setAssignedProcessor(proc);
 
-	// printf("%s assigned to proc %u for %f @ %f\n", job->createLabel().c_str(), proc, duration, time);
+	//printf("%s assigned to proc %u for %f @ %f\n", job->createLabel().c_str(), proc, duration, time);
 	return true;
 }
 

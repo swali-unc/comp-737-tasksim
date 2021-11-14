@@ -29,6 +29,8 @@ private:
 	ScheduleSprite** timelines;
 	UIButton* timeForwardBtn;
 	UIButton* timeBackwardBtn;
+	UIButton* newProblemBtn;
+	UIButton* newSchedulerBtn;
 	TextSprite* currentTimeSprite;
 	TextSprite** processorNames;
 	std::vector<std::pair<double,UIButton*>> errors;
@@ -36,5 +38,7 @@ private:
 	void createTimeSprite();
 
 	void ErrorButtonCallback(double time);
+	void NewProblemButton();
+	void NewSchedulerButton();
 };
 

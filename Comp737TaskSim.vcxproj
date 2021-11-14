@@ -153,6 +153,7 @@
     <ClCompile Include="JobExecution.cpp" />
     <ClCompile Include="JobExecutionSprite.cpp" />
     <ClCompile Include="JobReleaseSprite.cpp" />
+    <ClCompile Include="LoadingSimView.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MouseoverRegistration.cpp" />
     <ClCompile Include="OpenFileView.cpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="JobExecutionSprite.hpp" />
     <ClInclude Include="JobReleaseSprite.hpp" />
     <ClInclude Include="JobStatusEvent.hpp" />
+    <ClInclude Include="LoadingSimView.hpp" />
     <ClInclude Include="MouseoverRegistration.hpp" />
     <ClInclude Include="OpenFileView.hpp" />
     <ClInclude Include="ProblemSet.hpp" />

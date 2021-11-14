@@ -5,10 +5,10 @@
 
 #include "ViewManager.hpp"
 #include "TitleView.hpp"
+#include "LoadingSimView.hpp"
 #include "SimulationState.hpp"
 
 // These three includes will go away in future
-#include "SimulationView.hpp"
 #include "DLLScheduler.hpp"
 #include "TaskSimulator.hpp"
 
@@ -24,7 +24,7 @@ auto constexpr SCHEDULER_DIR = "Schedulers\\";
 void* OpenFileThread(void* data);
 
 bool OpenFileView::Render(RenderWindow& window, Vector2f mouse, bool clicked) {
-	window.draw(*waitText.getCachedSprite());
+	window.draw(*waitText->getCachedSprite());
 
 	LockObject();
 	if(fileOpenStatus == NO_FILE_PICKED) {
@@ -45,29 +45,34 @@ bool OpenFileView::Render(RenderWindow& window, Vector2f mouse, bool clicked) {
 				// And the next step will be to load the scheduler
 				ss->setProblem(new ProblemSet(filepath));
 				ViewManager::Instance()->queueClear();
-				ViewManager::Instance()->queueView(
-					new OpenFileView("Please select an algorithm DLL",
-						"Scheduling Algorithm DLL\0*.DLL\0All\0*.*\0\0")
-				);
+				ViewManager::Instance()->queueView(new OpenFileView());
+				return false;
+			}
+			else if (!ss->getScheduler()) {
+				// If we got this far, then we have a problem loaded, but now need a scheduler
+				ss->setScheduler(new DLLScheduler(filepath));
+
+				// Now that the scheduler is loaded
+				/*ss->setSimulation(new TaskSimulator());
+				ss->getSimulator()->LoadProblem();
+
+				while (ss->getSimulator()->NeedsSimulation()) {
+					ss->getSimulator()->Simulate();
+				}
+
+				ViewManager::Instance()->queueClear();
+				ViewManager::Instance()->queueView(new SimulationView());*/
+				auto vm = ViewManager::Instance();
+				vm->queueClear();
+				vm->queueView(new LoadingSimView());
 				return false;
 			}
 
-			// If we got this far, then we have a problem loaded, but now need a scheduler
-			ss->setScheduler(new DLLScheduler(filepath));
-
-			// Now that the scheduler is loaded
-			ss->setSimulation(new TaskSimulator());
-			ss->getSimulator()->LoadProblem();
-
-			while( ss->getSimulator()->NeedsSimulation() ) {
-				ss->getSimulator()->Simulate();
-			}
-
-			ViewManager::Instance()->queueClear();
-			ViewManager::Instance()->queueView(new SimulationView());
+			throw runtime_error("A file was selected, but purpose unknown");
+			
 		}
 		catch(exception e) {
-			fprintf(stderr, "Could not load problem: %s", e.what());
+			fprintf(stderr, "Could not load file: %s", e.what());
 			ViewManager::Instance()->queueClear();
 			ViewManager::Instance()->queueView(new TitleView());
 
@@ -89,8 +94,9 @@ bool OpenFileView::Render(RenderWindow& window, Vector2f mouse, bool clicked) {
 	return true;
 }
 
-OpenFileView::OpenFileView(string text, const char* filetypes) : ViewObject(), ThreadSpinLockedObject(),
-	waitText(text,Color::Black,24) {
+OpenFileView::OpenFileView(string text, const char* filetypes) : ViewObject(), ThreadSpinLockedObject() {
+	fileOpenThread = nullptr;
+	waitText = new TextSprite(text, Color::Black, 24);
 	this->filetypes = filetypes;
 	fileOpenStatus = OpenFileViewStatus::UNKNOWN;
 
@@ -98,8 +104,28 @@ OpenFileView::OpenFileView(string text, const char* filetypes) : ViewObject(), T
 	fileOpenThread->detach();
 }
 
+OpenFileView::OpenFileView() : ViewObject(), ThreadSpinLockedObject() {
+	auto ss = SimulationState::Instance();
+	if (!ss->getProblem()) {
+		waitText = new TextSprite("Waiting for problem XML to be selected..", Color::Black, 24);
+		this->filetypes = "XML\0*.XML\0All\0*.*\0\0";
+	}
+	else if (!ss->getScheduler()) {
+		waitText = new TextSprite("Please select an algorithm DLL", Color::Black, 24);
+		this->filetypes = "Scheduling Algorithm DLL\0*.DLL\0All\0*.*\0\0";
+	}
+	else
+		throw runtime_error("OpenFileView loaded, but all files accounted for");
+
+	fileOpenStatus = OpenFileViewStatus::UNKNOWN;
+
+	fileOpenThread = new thread(OpenFileThread, (void*)this);
+	fileOpenThread->detach();
+}
+
 OpenFileView::~OpenFileView() {
-	delete fileOpenThread;
+	if( waitText ) delete waitText;
+	if( fileOpenThread ) delete fileOpenThread;
 }
 
 void* OpenFileThread(void* data) {

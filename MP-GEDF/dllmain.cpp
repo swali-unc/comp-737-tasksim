@@ -6,6 +6,11 @@
 
 #define REQUIRED_TASKSIM_VERSION 1u
 
+void* tieBreaker(void* job1, void* job2);
+
+CEXPORT void OnJobRelease(double time, void* job);
+CEXPORT void OnJobFinish(double time, void* job, unsigned int proc);
+
 CEXPORT void OnJobRelease(double time, void* job) {
 	void* lowestPriorityJob = nullptr;
 
@@ -20,7 +25,21 @@ CEXPORT void OnJobRelease(double time, void* job) {
 			lowestPriorityJob = procJob;
 	}
 
-	if (GetAbsoluteDeadline(job) < GetAbsoluteDeadline(lowestPriorityJob)) {
+	auto dl1 = GetAbsoluteDeadline(job);
+	auto dl2 = GetAbsoluteDeadline(lowestPriorityJob);
+	if (dl1 == dl2) {
+		if(GetRemainingCost(lowestPriorityJob) > 0)
+			return; // prioritize the currently executing job
+		auto realjob = tieBreaker(lowestPriorityJob, job);
+		if (realjob != lowestPriorityJob)
+			return;
+		auto proc = GetLatestAssignedProcessor(lowestPriorityJob);
+		StopCurrentJob(proc);
+		Schedule(proc, realjob, GetRemainingCost(realjob));
+	}
+
+	//if (GetAbsoluteDeadline(job) < GetAbsoluteDeadline(lowestPriorityJob)) {
+	if(dl1 < dl2) {
 		auto proc = GetLatestAssignedProcessor(lowestPriorityJob);
 		StopCurrentJob(proc);
 		Schedule(proc, job, GetRemainingCost(job));
@@ -36,9 +55,21 @@ CEXPORT void OnJobFinish(double time, void* job, unsigned int proc) {
 	void* highestPriorityJob = nullptr;
 	for (auto i = 0u; i < numJobs; ++i) {
 		auto latestProc = GetLatestAssignedProcessor(currentJobs[i]);
-		if ((!highestPriorityJob || GetAbsoluteDeadline(currentJobs[i]) < GetAbsoluteDeadline(highestPriorityJob))
-			&& (latestProc < 0 || GetJobOnProcessor(latestProc) != currentJobs[i]))
-			highestPriorityJob = currentJobs[i];
+		if (latestProc < 0 || GetJobOnProcessor(latestProc) != currentJobs[i]) {
+			if (!highestPriorityJob) {
+				highestPriorityJob = currentJobs[i];
+				continue;
+			}
+
+			auto dl1 = GetAbsoluteDeadline(currentJobs[i]);
+			auto dl2 = GetAbsoluteDeadline(highestPriorityJob);
+			if (dl1 == dl2) {
+				// break tie with task id if it exists
+				highestPriorityJob = tieBreaker(currentJobs[i], highestPriorityJob);
+			}
+			else if (dl1 < dl2)
+				highestPriorityJob = currentJobs[i];
+		}
 	}
 
 	if( highestPriorityJob )
@@ -48,6 +79,19 @@ CEXPORT void OnJobFinish(double time, void* job, unsigned int proc) {
 
 CEXPORT unsigned long IdentifyAsScheduler(unsigned long) {
 	return REQUIRED_TASKSIM_VERSION;
+}
+
+void* tieBreaker(void* job1, void* job2) {
+	// break tie with task id if it exists
+	int tid1 = GetTaskIndex(job1);
+	int tid2 = GetTaskIndex(job2);
+	if (tid1 == -1)
+		tid1 = GetJobIndex(job1);
+	if (tid2 == -1)
+		tid2 = GetJobIndex(job2);
+	if (tid1 == tid2)
+		return (size_t)job1 < (size_t)job2 ? job1 : job2;
+	return (tid1 < tid2) ? job1 : job2;
 }
 
 BOOL APIENTRY DllMain(	HMODULE hModule,

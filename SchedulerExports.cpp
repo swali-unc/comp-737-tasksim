@@ -86,6 +86,10 @@ CEXPORT int GetLatestAssignedProcessor(void* job) {
 	return ((Job*)job)->getLatestAssignedProcessor();
 }
 
+CEXPORT int GetLatestJobAssignedProcessor(void* job) {
+	return ((Job*)job)->getLatestJobSpecificProcessor();
+}
+
 CEXPORT double GetRemainingCost(void* job) {
 	// The reason we do this is because the simulator only progresses the job pointer
 	//  accumulated runtime when it needs to
@@ -111,4 +115,13 @@ CEXPORT bool IsJobUsingResource(void* job, const char* name) {
 CEXPORT void GetJobLabel(void* job, char* buf, size_t bufLen) {
 	auto str = ((Job*)job)->createLabel();
 	strcpy_s(buf, bufLen, str.c_str());
+}
+
+CEXPORT int GetTaskIndex(void* job) {
+	auto t = ((Job*)job)->getRelatedTask();
+	return t ? t->getIndex() : -1;
+}
+
+CEXPORT int GetJobIndex(void* job) {
+	return ((Job*)job)->getIndex();
 }

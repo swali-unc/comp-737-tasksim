@@ -16,6 +16,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UP-PEDF-PIP", "UP-PEDF-PIP\
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MP-GEDF", "MP-GEDF\MP-GEDF.vcxproj", "{35567A60-ED5E-42F7-AB39-60BD70FCA231}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CD00959C-5632-4183-832F-801F1E3E421F} = {CD00959C-5632-4183-832F-801F1E3E421F}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

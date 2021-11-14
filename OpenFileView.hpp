@@ -20,6 +20,7 @@ enum OpenFileViewStatus {
 class OpenFileView : public ViewObject, public DigitalHaze::ThreadSpinLockedObject
 {
 public:
+	OpenFileView();
 	OpenFileView(std::string text, const char* filetypes);
 	virtual ~OpenFileView();
 
@@ -27,7 +28,7 @@ public:
 
 	friend void* OpenFileThread(void* data);
 private:
-	TextSprite waitText;
+	TextSprite* waitText;
 	char filepath[_MAX_PATH];
 	const char* filetypes;
 

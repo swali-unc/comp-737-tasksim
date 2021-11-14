@@ -24,6 +24,7 @@
     <ProjectGuid>{c031d851-d46e-4f5b-9b91-6facdfda3a7f}</ProjectGuid>
     <RootNamespace>NPEDF</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>MP-NPEDF</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

@@ -1,14 +1,16 @@
 #include "SimulationView.hpp"
 
-#include "SimulationState.hpp"
 #include <vector>
 #include <utility>
 #include <string>
 
+#include "SimulationState.hpp"
+#include "ViewManager.hpp"
 #include "JobStatusEvent.hpp"
 #include "CommentEvent.hpp"
 #include "MouseoverRegistration.hpp"
 #include "Utility.hpp"
+#include "OpenFileView.hpp"
 
 using namespace sf;
 using std::vector;
@@ -25,6 +27,7 @@ auto constexpr PROC_LABEL_SIZE = 15u;
 auto constexpr ERROR_BUTTON_WIDTH = 150u;
 auto constexpr ERROR_BUTTON_HEIGHT = 30u;
 auto constexpr MAX_LETTERS_IN_ERROR_BUTTON = 20;
+auto constexpr CHANGE_PROBLEM_WIDTH = 100;
 #define TIME_LABEL_COLOR Color::Black
 #define PROC_LABEL_COLOR Color::Black
 
@@ -157,6 +160,27 @@ void SimulationView::createTimeSprite() {
 	currentTimeSprite->getCachedSprite()->setPosition(25.f, 30.f + TIME_BUTTON_HEIGHT + 5.f);
 }
 
+void SimulationView::NewProblemButton() {
+	auto ss = SimulationState::Instance();
+	auto vm = ViewManager::Instance();
+
+	ss->setProblem(nullptr);
+	ss->setScheduler(nullptr);
+
+	vm->queueClear();
+	vm->queueView(new OpenFileView());
+}
+
+void SimulationView::NewSchedulerButton() {
+	auto ss = SimulationState::Instance();
+	auto vm = ViewManager::Instance();
+
+	ss->setScheduler(nullptr);
+
+	vm->queueClear();
+	vm->queueView(new OpenFileView());
+}
+
 SimulationView::SimulationView() : ButtonView() {
 	currentTimeSprite = nullptr;
 	processorNames = nullptr;
@@ -182,6 +206,14 @@ SimulationView::SimulationView() : ButtonView() {
 	registerButton(timeForwardBtn);
 	registerButton(timeBackwardBtn);
 	createTimeSprite();
+
+	newProblemBtn = new UIButton("New Problem", bind(&SimulationView::NewProblemButton, this), CHANGE_PROBLEM_WIDTH, TIME_BUTTON_HEIGHT);
+	newSchedulerBtn = new UIButton("New Scheduler", bind(&SimulationView::NewSchedulerButton, this), CHANGE_PROBLEM_WIDTH, TIME_BUTTON_HEIGHT);
+	newProblemBtn->setButtonPosition(125.f, 10.f);
+	newSchedulerBtn->setButtonPosition(130.f + CHANGE_PROBLEM_WIDTH, 10.f);
+	registerButton(newProblemBtn);
+	registerButton(newSchedulerBtn);
+
 	simulationInProgress = false;
 }
 
@@ -203,5 +235,7 @@ SimulationView::~SimulationView() {
 	if(timeForwardBtn) delete timeForwardBtn;
 	if(timeBackwardBtn) delete timeBackwardBtn;
 	if(currentTimeSprite) delete currentTimeSprite;
+	if (newProblemBtn) delete newProblemBtn;
+	if (newSchedulerBtn) delete newSchedulerBtn;
 	MouseoverRegistration::Instance()->clearView(this);
 }

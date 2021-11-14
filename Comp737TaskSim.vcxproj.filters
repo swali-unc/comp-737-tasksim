@@ -129,6 +129,9 @@
     <ClCompile Include="MouseoverRegistration.cpp">
       <Filter>UI</Filter>
     </ClCompile>
+    <ClCompile Include="LoadingSimView.cpp">
+      <Filter>MVC</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Task.hpp">
@@ -238,6 +241,9 @@
     </ClInclude>
     <ClInclude Include="MouseoverRegistration.hpp">
       <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadingSimView.hpp">
+      <Filter>MVC</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
