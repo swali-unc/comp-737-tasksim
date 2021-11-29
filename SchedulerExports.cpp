@@ -125,3 +125,12 @@ CEXPORT int GetTaskIndex(void* job) {
 CEXPORT int GetJobIndex(void* job) {
 	return ((Job*)job)->getIndex();
 }
+
+CEXPORT double GetJobPeriod(void* job) {
+	auto t = ((Job*)job)->getRelatedTask();
+	return t ? t->getPeriod() : -1;
+}
+
+CEXPORT double GetRelativeDeadline(void* job) {
+	return ((Job*)job)->getRelativeDeadline();
+}

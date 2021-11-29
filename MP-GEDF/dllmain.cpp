@@ -4,7 +4,7 @@
 
 #pragma comment(lib,"../x64/Release/Comp737TaskSim.lib")
 
-#define REQUIRED_TASKSIM_VERSION 1u
+#define REQUIRED_TASKSIM_VERSION 1000ul
 
 void* tieBreaker(void* job1, void* job2);
 

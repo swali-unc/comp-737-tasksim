@@ -4,7 +4,7 @@
 
 #pragma comment(lib,"../x64/Release/Comp737TaskSim.lib")
 
-#define REQUIRED_TASKSIM_VERSION 1ul
+#define REQUIRED_TASKSIM_VERSION 1000ul
 
 #include <stdio.h>
 #include <stdlib.h>

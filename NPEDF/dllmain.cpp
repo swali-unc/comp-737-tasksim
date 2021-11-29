@@ -4,7 +4,7 @@
 
 #pragma comment(lib,"../x64/Release/Comp737TaskSim.lib")
 
-#define REQUIRED_TASKSIM_VERSION 1ul
+#define REQUIRED_TASKSIM_VERSION 1000ul
 
 CEXPORT void OnJobRelease(double time, void* job) {
     for(auto i = 0u; i < GetProcessorCount(); ++i) {

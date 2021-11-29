@@ -41,3 +41,5 @@ DLLMODE void GetJobLabel(void* job, char* buf, size_t bufLen);
 
 DLLMODE int GetTaskIndex(void* job);
 DLLMODE int GetJobIndex(void* job);
+DLLMODE double GetJobPeriod(void* job);
+DLLMODE double GetRelativeDeadline(void* job);

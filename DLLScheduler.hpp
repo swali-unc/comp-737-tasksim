@@ -5,8 +5,8 @@
 #include <Windows.h>
 #include <string>
 
-#define TASKSIM_VERSION 1ul
-#define MIN_REQUIRED_VERSION 1ul
+#define TASKSIM_VERSION 1000ul
+#define MIN_REQUIRED_VERSION 1000ul
 
 typedef void (*OnJobRelease)(double, void*);
 typedef void (*OnJobFinish)(double, void*, unsigned int);
