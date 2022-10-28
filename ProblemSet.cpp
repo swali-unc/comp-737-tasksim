@@ -7,6 +7,8 @@ using std::string;
 using std::runtime_error;
 using namespace tinyxml2;
 
+int getNumSiblingElements(tinyxml2::XMLElement* parent, const char* elementName);
+
 ProblemSet::ProblemSet(string filename) {
 	loadProblem(filename);
 }
@@ -68,9 +70,7 @@ void ProblemSet::initializeTaskSet(XMLElement* tasks) {
 	ColorFactory colors;
 	
 	// Count the tasks
-	unsigned int task_count = 0;
-	for (auto child = tasks->FirstChildElement("Task"); child; child = child->NextSiblingElement("Task"))
-		++task_count;
+	unsigned int task_count = getNumSiblingElements(tasks, "Task");
 	this->numTasks = task_count;
 
 	// No tasks? that was easy
@@ -81,8 +81,18 @@ void ProblemSet::initializeTaskSet(XMLElement* tasks) {
 
 	// We have a task set
 	taskSet = new Task * [task_count];
-	unsigned int task_index = 0;
-	for (auto child = tasks->FirstChildElement("Task"); child; child = child->NextSiblingElement("Task")) {
+	tinyxml2::XMLElement** elements;
+	{
+		unsigned int task_index = 0;
+		elements = new tinyxml2::XMLElement * [task_count];
+		for(auto child = tasks->FirstChildElement("Task"); child; child = child->NextSiblingElement("Task"))
+			elements[task_index++] = child;
+	}
+
+#pragma omp for nowait
+	for(int i = 0; i < task_count; ++i) {
+		tinyxml2::XMLElement* child = elements[(unsigned int)i];
+
 		double taskPhase, taskPeriod, taskCost, taskRelativeDeadline;
 
 		// Default release is 0
@@ -91,12 +101,18 @@ void ProblemSet::initializeTaskSet(XMLElement* tasks) {
 
 		// No such thing as a default period
 		auto period = child->FirstChildElement("Period");
-		if (!period) throw runtime_error("ProblemSet- problem missing period");
+		if(!period) {
+			delete[] elements;
+			throw runtime_error("ProblemSet- problem missing period");
+		}
 		taskPeriod = period->DoubleText();
 
 		// No such thing as a default cost
 		auto cost = child->FirstChildElement("Cost");
-		if (!cost) throw runtime_error("ProblemSet- problem missing cost");
+		if(!cost) {
+			delete[] elements;
+			throw runtime_error("ProblemSet- problem missing cost");
+		}
 		taskCost = cost->DoubleText();
 
 		// Default relative deadline is period
@@ -104,31 +120,50 @@ void ProblemSet::initializeTaskSet(XMLElement* tasks) {
 		taskRelativeDeadline = !rDeadline ? taskPeriod : rDeadline->DoubleText();
 
 		// Create the task
-		taskSet[task_index] = new Task(taskPhase, taskPeriod, taskCost, taskRelativeDeadline, task_index);
+		taskSet[(unsigned int)i] = new Task(taskPhase, taskPeriod, taskCost, taskRelativeDeadline, i);
 
 		// Do we have any resources?
 		auto resources = child->FirstChildElement("Resources");
 		if (resources) {
-			for (auto resource = resources->FirstChildElement("Resource"); resource; resource = resource->NextSiblingElement("Resource")) {
+			int num_resources = getNumSiblingElements(resources, "Resource");
+			tinyxml2::XMLElement** resourceElements = new tinyxml2::XMLElement * [num_resources];
+			{
+				unsigned int resource_index = 0;
+				for(auto resource = resources->FirstChildElement("Resource"); resource; resource = resource->NextSiblingElement("Resource"))
+					resourceElements[resource_index++] = resource;
+			}
+
+			// Unfortunately, MSVS will not allow for to be nested.
+			// #pragma omp for
+			for( int j = 0; j < num_resources; ++j) {
 				// Resource name
+				tinyxml2::XMLElement* resource = resourceElements[j];
 				auto name = resource->FirstChildElement("Name");
-				if (!name) throw runtime_error("ProblemSet- resource missing name");
+				if(!name) {
+					delete[] elements;
+					delete[] resourceElements;
+					throw runtime_error("ProblemSet- resource missing name");
+				}
 				// Default start offset is 0
 				auto resourceStart = resource->FirstChildElement("Start");
 				double startOffset = !resourceStart ? 0 : resourceStart->DoubleText();
 				// Cost
 				auto resourceCost = resource->FirstChildElement("Cost");
-				if (!resourceCost) throw runtime_error("ProblemSet- resource missing cost");
+				if(!resourceCost) {
+					delete[] elements;
+					delete[] resourceElements;
+					throw runtime_error("ProblemSet- resource missing cost");
+				}
 
-				taskSet[task_index]->addResourceAccess(startOffset, resourceCost->DoubleText(), name->GetText());
+				taskSet[(unsigned int)i]->addResourceAccess(startOffset, resourceCost->DoubleText(), name->GetText());
 			}
 		}
 
 		// Set the color
-		taskSet[task_index]->setColor(colors.getNextColor());
-
-		++task_index;
+		taskSet[(unsigned int)i]->setColor(colors.getNextColor());
 	}
+
+	delete[] elements;
 }
 
 void ProblemSet::initializeAperiodics(XMLElement* jobs) {
@@ -197,4 +232,11 @@ void ProblemSet::initializeAperiodics(XMLElement* jobs) {
 
 		++job_index;
 	}
+}
+
+int getNumSiblingElements(tinyxml2::XMLElement* parent, const char* elementName) {
+	int count = 0;
+	for(auto child = parent->FirstChildElement(elementName); child; child = child->NextSiblingElement(elementName))
+		++count;
+	return count;
 }
