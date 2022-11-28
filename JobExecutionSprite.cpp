@@ -21,6 +21,9 @@ RenderTexture* JobExecutionSprite::createRenderTexture() {
 	if (!renderTexture)
 		throw std::runtime_error("JobExecutionSprite- could not allocate render texture");
 
+	if(width < 1) width = 1;
+	if(height < 1) height = 1;
+
 	if (!renderTexture->create((unsigned int)width, (unsigned int)height)) {
 		delete renderTexture;
 		throw std::runtime_error(stringprintf("JobExecutionSprite- could not create render texture resolution %u x %u",
