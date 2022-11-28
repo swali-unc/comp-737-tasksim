@@ -137,7 +137,7 @@ void ProblemSet::initializeTaskSet(XMLElement* tasks) {
 			// #pragma omp for
 			for( int j = 0; j < num_resources; ++j) {
 				// Resource name
-				tinyxml2::XMLElement* resource = resourceElements[j];
+				tinyxml2::XMLElement* resource = resourceElements[(unsigned int)j];
 				auto name = resource->FirstChildElement("Name");
 				if(!name) {
 					delete[] elements;
