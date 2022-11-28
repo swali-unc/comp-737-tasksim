@@ -3,6 +3,10 @@
 #include <stdexcept>
 #include "ColorFactory.hpp"
 
+#ifdef BENCHMARK_XML
+#include <chrono>
+#endif
+
 using std::string;
 using std::runtime_error;
 using namespace tinyxml2;
@@ -89,6 +93,10 @@ void ProblemSet::initializeTaskSet(XMLElement* tasks) {
 			elements[task_index++] = child;
 	}
 
+#ifdef BENCHMARK_XML
+	auto t0 = std::chrono::high_resolution_clock::now();
+#endif
+
 #pragma omp for nowait
 	for(int i = 0; i < task_count; ++i) {
 		tinyxml2::XMLElement* child = elements[(unsigned int)i];
@@ -162,6 +170,11 @@ void ProblemSet::initializeTaskSet(XMLElement* tasks) {
 		// Set the color
 		taskSet[(unsigned int)i]->setColor(colors.getNextColor());
 	}
+
+#ifdef BENCHMARK_XML
+	auto t1 = std::chrono::high_resolution_clock::now();
+	printf("XML Load time: %lldns\n", std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count());
+#endif
 
 	delete[] elements;
 }

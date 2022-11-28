@@ -6,10 +6,12 @@
 
 #include <string>
 
+//#define BENCHMARK_XML
+
 class ProblemSet
 {
 public:
-	ProblemSet() noexcept { }
+	//ProblemSet() noexcept { }
 	ProblemSet(std::string filename);
 	~ProblemSet();
 
